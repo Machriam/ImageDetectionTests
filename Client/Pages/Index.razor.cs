@@ -13,7 +13,7 @@ namespace ImageDetectionTests.Client.Pages
         public async Task OnFileChanged(InputFileChangeEventArgs args)
         {
             using var memoryStream = new MemoryStream();
-            await args.File.OpenReadStream().CopyToAsync(memoryStream);
+            await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
             var image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
             await UpdateImage(image);
         }
