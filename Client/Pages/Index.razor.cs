@@ -30,6 +30,8 @@ namespace ImageDetectionTests.Client.Pages
             using var dst = new Mat();
             Cv2.Canny(src, dst, 50, 200);
             dst.DrawOnCanvas(canvasDestCtx, true);
+            var data = canvasDestEl.ToDataURL();
+            Console.WriteLine(data);
         }
     }
 }
