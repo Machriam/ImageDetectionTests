@@ -6,7 +6,12 @@
 
 <InputFile OnChange="@(OnFileChanged)"></InputFile>
 
-<canvas style="zoom: 50%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
-<canvas style="zoom: 50%; border: 1px solid grey;" @ref=canvasDestRef></canvas>
-
-
+@if (_image != null)
+{
+    <Image OnImageRendered="@(args=>_currentImageData=args)" ImageData="@_image"></Image>
+    @if (_nextAction != null)
+    {
+        <Image OnImageRendered="@(args=>_currentImageData=args)" Conversion="_nextAction"></Image>
+    }
+    <button @onclick="AddPipelineStep" class="btn btn-primary">Add Canny</button>
+}

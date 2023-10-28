@@ -1,0 +1,41 @@
+﻿@using OpenCvSharp;
+@using SpawnDev.BlazorJS.JSObjects;
+<canvas style="zoom: 50%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
+
+@code {
+    ElementReference canvasSrcRef;
+    [Parameter] public string ImageData { get; set; } = "";
+    [Parameter] public Action<Mat>? Conversion { get; set; }
+    [Parameter] public EventCallback<MatImageData> OnImageRendered { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        if (Conversion != null) await RenderPipelineImage(Conversion);
+        else await RenderImage(ImageData);
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    public async Task RenderImage(string image)
+    {
+        using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
+        using var canvasSrcCtx = canvasSrcEl.Get2DContext();
+        using var src = new Mat();
+        await src.LoadImageURL(image);
+        src.DrawOnCanvas(canvasSrcCtx, true);
+        await OnImageRendered.InvokeAsync(new MatImageData()
+            {
+                RGBABytes = src.GetRGBABytes(),
+                Height = src.Height,
+                Width = src.Width
+            });
+    }
+    public Task RenderPipelineImage(Action<Mat> pipelineAction)
+    {
+        using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
+        using var canvasSrcCtx = canvasSrcEl.Get2DContext();
+        using var dest = new Mat();
+        pipelineAction(dest);
+        dest.DrawOnCanvas(canvasSrcCtx, true);
+        return Task.CompletedTask;
+    }
+}

@@ -2,6 +2,7 @@
 
 using OpenCvSharp;
 using SpawnDev.BlazorJS.JSObjects;
+using System;
 using System.Runtime.InteropServices;
 
 public static class MatExtensions

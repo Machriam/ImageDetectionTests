@@ -1,37 +1,29 @@
-using global::Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using OpenCvSharp;
-using SpawnDev.BlazorJS.JSObjects;
 
 namespace ImageDetectionTests.Client.Pages
 {
     public partial class Index
     {
-        private ElementReference canvasSrcRef;
-        private ElementReference canvasDestRef;
+        private string? _image;
+        private MatImageData? _currentImageData;
+        private Action<Mat>? _nextAction;
 
         public async Task OnFileChanged(InputFileChangeEventArgs args)
         {
             using var memoryStream = new MemoryStream();
             await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
-            var image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
-            await UpdateImage(image);
+            _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
         }
 
-        protected async Task UpdateImage(string image)
+        public void AddPipelineStep()
         {
-            using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
-            using var canvasSrcCtx = canvasSrcEl.Get2DContext();
-            using var canvasDestEl = new HTMLCanvasElement(canvasDestRef);
-            using var canvasDestCtx = canvasDestEl.Get2DContext();
-            using var src = new Mat();
-            await src.LoadImageURL(image);
-            src.DrawOnCanvas(canvasSrcCtx, true);
-            using var dst = new Mat();
-            Cv2.Canny(src, dst, 50, 200);
-            dst.DrawOnCanvas(canvasDestCtx, true);
-            var data = canvasDestEl.ToDataURL();
-            Console.WriteLine(data);
+            if (_currentImageData == null) return;
+            _nextAction = dest =>
+            {
+                using var source = _currentImageData.CreateMatFromRGBA();
+                Cv2.Canny(source, dest, 50, 200);
+            };
         }
     }
 }
