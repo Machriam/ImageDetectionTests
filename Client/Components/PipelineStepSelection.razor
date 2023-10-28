@@ -1,0 +1,24 @@
+﻿<select @onchange="SelectedStepChanged">
+    @foreach (var step in PossibleSteps)
+    {
+        <option></option>
+        <option value="@step.Name">@step.Name</option>
+    }
+</select>
+@if (_selectedStep != null)
+{
+    @foreach (var param in _selectedStep.TypeDictionary)
+    {
+        @if (new[] { TypeCode.Int16, TypeCode.UInt16, TypeCode.UInt32, TypeCode.Int64, TypeCode.UInt64, TypeCode.Int32 }.Contains(param.Value))
+        {
+            <label>@param.Key.Name</label>
+            <input @onchange="@(value=>_parameters[param.Key.Position]=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
+                   type="number"
+                   class="form-control"
+                   value="@_parameters[param.Key.Position]" />
+        }
+    }
+}
+<button @onclick="@AddFilter" class="btn btn-primary">Add Step</button>
+
+

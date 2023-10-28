@@ -20,13 +20,9 @@ namespace ImageDetectionTests.Client.Pages
             _images.Add(data);
         }
 
-        public void AddPipelineStep()
+        public void AddPipelineStep(Action<Mat, MatImageData> action)
         {
-            _images[^1].PipelineAction = dest =>
-            {
-                using var source = _images[^1].CreateMatFromRGBA();
-                Cv2.Canny(source, dest, 50, 200);
-            };
+            _images[^1].PipelineAction = dest => action.Invoke(dest, _images[^1]);
         }
     }
 }

@@ -4,7 +4,11 @@
 
 <PageTitle>Index</PageTitle>
 
-<InputFile OnChange="@(OnFileChanged)"></InputFile>
+<div class="col-md-12 row">
+    <InputFile OnChange="@(OnFileChanged)"></InputFile>
+    <PipelineStepSelection FilterAddRequested="AddPipelineStep"></PipelineStepSelection>
+</div>
+<hr />
 
 @if (_image != null)
 {
@@ -13,5 +17,4 @@
     {
         <Image OnImageRendered="@(AddMatImageData)" CurrentData="_images[i]"></Image>
     }
-    <button @onclick="AddPipelineStep" class="btn btn-primary">Add Canny</button>
 }
