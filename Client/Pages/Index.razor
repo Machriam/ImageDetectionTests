@@ -8,10 +8,10 @@
 
 @if (_image != null)
 {
-    <Image OnImageRendered="@(args=>_currentImageData=args)" ImageData="@_image"></Image>
-    @if (_nextAction != null)
+    <Image OnImageRendered="@(AddMatImageData)" ImageData="@_image"></Image>
+    for (var i = 0; i < _images.Where(im => im.PipelineAction != null).Count(); i++)
     {
-        <Image OnImageRendered="@(args=>_currentImageData=args)" Conversion="_nextAction"></Image>
+        <Image OnImageRendered="@(AddMatImageData)" CurrentData="_images[i]"></Image>
     }
     <button @onclick="AddPipelineStep" class="btn btn-primary">Add Canny</button>
 }

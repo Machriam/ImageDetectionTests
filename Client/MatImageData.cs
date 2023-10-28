@@ -5,6 +5,8 @@ namespace ImageDetectionTests.Client;
 
 public class MatImageData
 {
+    public Action<Mat>? PipelineAction { get; set; }
+    public int PipelineStep { get; set; }
     public byte[] RGBABytes { get; set; } = System.Array.Empty<byte>();
     public int Width { get; set; }
     public int Height { get; set; }

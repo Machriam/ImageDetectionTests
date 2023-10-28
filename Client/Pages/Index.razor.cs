@@ -6,8 +6,7 @@ namespace ImageDetectionTests.Client.Pages
     public partial class Index
     {
         private string? _image;
-        private MatImageData? _currentImageData;
-        private Action<Mat>? _nextAction;
+        private readonly List<MatImageData> _images = new();
 
         public async Task OnFileChanged(InputFileChangeEventArgs args)
         {
@@ -16,12 +15,16 @@ namespace ImageDetectionTests.Client.Pages
             _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
         }
 
+        public void AddMatImageData(MatImageData data)
+        {
+            _images.Add(data);
+        }
+
         public void AddPipelineStep()
         {
-            if (_currentImageData == null) return;
-            _nextAction = dest =>
+            _images[^1].PipelineAction = dest =>
             {
-                using var source = _currentImageData.CreateMatFromRGBA();
+                using var source = _images[^1].CreateMatFromRGBA();
                 Cv2.Canny(source, dest, 50, 200);
             };
         }
