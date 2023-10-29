@@ -7,6 +7,7 @@ public class MatImageData
 {
     public string OriginalImage { get; set; } = "";
     public Guid Guid { get; init; } = Guid.NewGuid();
+    public Action<Mat, MatImageData>? BaseAction { get; set; }
     public Action<Mat>? PipelineAction { get; set; }
     public long PipelineStep { get; set; }
     public byte[] RGBABytes { get; set; } = System.Array.Empty<byte>();

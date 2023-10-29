@@ -7,17 +7,23 @@ public interface IImageDataHandler
 {
     event Action<IList<Guid>>? ImageChanged;
 
+    event Action<Guid>? ImageSelected;
+
     void AddImage(Action<Mat, MatImageData> action);
 
     void AddSourceImage(string image);
 
-    void RemoveImageAt();
-
-    void UpdateImageAt();
-
     MatImageData GetRenderData(Guid guid);
 
     Task ImageRendered(MatImageData data);
+
+    void InvokeImageChanged();
+
+    void RemoveSelectedImage();
+
+    void SelectImage(Guid guid);
+
+    void UpdateImageAt();
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -26,6 +32,8 @@ public class ImageDataHandler : IImageDataHandler
     private Guid? _selectedImage;
 
     public event Action<IList<Guid>>? ImageChanged;
+
+    public event Action<Guid>? ImageSelected;
 
     public void AddSourceImage(string image)
     {
@@ -63,13 +71,28 @@ public class ImageDataHandler : IImageDataHandler
             _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
         _imageData.Insert(index + 1, new MatImageData()
         {
+            BaseAction = action,
             PipelineAction = dest => action.Invoke(dest, previousData),
         });
         InvokeImageChanged();
     }
 
-    public void RemoveImageAt()
+    public void SelectImage(Guid guid)
     {
+        _selectedImage = guid;
+        ImageSelected?.Invoke(guid);
+    }
+
+    public void RemoveSelectedImage()
+    {
+        if (_selectedImage == null) return;
+        var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
+        if (!string.IsNullOrEmpty(image.OriginalImage)) _imageData.Clear();
+        else _imageData.Remove(image);
+        if (_imageData.Count > index && _imageData[index].BaseAction != null)
+            _imageData[index].PipelineAction = dest => _imageData[index].BaseAction!(dest, _imageData[index - 1]);
+        InvokeImageChanged();
+        _selectedImage = null;
     }
 
     public void UpdateImageAt()

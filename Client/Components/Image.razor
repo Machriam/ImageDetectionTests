@@ -1,24 +1,35 @@
 ﻿@using OpenCvSharp;
 @using SpawnDev.BlazorJS.JSObjects;
-<canvas style="zoom: @(Zoom)%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
+<canvas @onclick="SelectImage" style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");" @ref=canvasSrcRef></canvas>
 
 @code {
     ElementReference canvasSrcRef;
     [Inject] IImageDataHandler ImageDataHandler { get; set; } = default!;
     [Parameter] public Guid CurrentData { get; set; }
     [Parameter] public int Zoom { get; set; } = 100;
+    private bool _selected;
 
+    public void SelectImage()
+    {
+        ImageDataHandler.SelectImage(CurrentData);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+        ImageDataHandler.ImageSelected += OnImageSelected;
         var data = ImageDataHandler.GetRenderData(CurrentData);
         if (!string.IsNullOrEmpty(data.OriginalImage)) await RenderImage(data.OriginalImage);
         else if (data.PipelineAction != null) await RenderPipelineImage(data.PipelineAction);
         await base.OnAfterRenderAsync(firstRender);
     }
+    public void OnImageSelected(Guid guid)
+    {
+        if (CurrentData != guid) _selected = false;
+        else _selected = true;
+        StateHasChanged();
+    }
     public async Task RenderImage(string image)
     {
-        Console.WriteLine("render im");
         using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
         using var canvasSrcCtx = canvasSrcEl.Get2DContext();
         using var src = new Mat();
@@ -29,7 +40,6 @@
     }
     public async Task RenderPipelineImage(Action<Mat> pipelineAction)
     {
-        Console.WriteLine("render pipe");
         using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
         using var canvasSrcCtx = canvasSrcEl.Get2DContext();
         using var dest = new Mat();
