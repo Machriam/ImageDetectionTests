@@ -47,6 +47,11 @@ public partial class PipelineStepSelection
 
     private PipelineStep? _selectedStep;
 
+    public void Clear()
+    {
+        ImageDataHandler.Clear();
+    }
+
     public void RemoveStep()
     {
         ImageDataHandler.RemoveSelectedImage();

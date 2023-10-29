@@ -24,6 +24,8 @@ public interface IImageDataHandler
     void SelectImage(Guid guid);
 
     void UpdateImageAt();
+
+    void Clear();
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -87,12 +89,23 @@ public class ImageDataHandler : IImageDataHandler
     {
         if (_selectedImage == null) return;
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
-        if (!string.IsNullOrEmpty(image.OriginalImage)) _imageData.Clear();
-        else _imageData.Remove(image);
+        if (!string.IsNullOrEmpty(image.OriginalImage))
+        {
+            Clear();
+            return;
+        }
+        _imageData.Remove(image);
         if (_imageData.Count > index && _imageData[index].BaseAction != null)
             _imageData[index].PipelineAction = dest => _imageData[index].BaseAction!(dest, _imageData[index - 1]);
         InvokeImageChanged();
         _selectedImage = null;
+    }
+
+    public void Clear()
+    {
+        _imageData.Clear();
+        _selectedImage = null;
+        InvokeImageChanged();
     }
 
     public void UpdateImageAt()

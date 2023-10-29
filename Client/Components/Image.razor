@@ -1,4 +1,5 @@
-﻿@using OpenCvSharp;
+﻿@implements IDisposable
+@using OpenCvSharp;
 @using SpawnDev.BlazorJS.JSObjects;
 <canvas @onclick="SelectImage" style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");" @ref=canvasSrcRef></canvas>
 
@@ -56,5 +57,9 @@
                 Width = src.Width,
                 RGBABytes = src.GetRGBABytes()
             });
+    }
+    public void Dispose()
+    {
+        ImageDataHandler.ImageSelected -= OnImageSelected;
     }
 }
