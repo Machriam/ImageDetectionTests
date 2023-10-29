@@ -12,16 +12,15 @@
     </div>
     @if (_image != null)
     {
-        <PipelineStepSelection class="col-md-9" FilterAddRequested="AddPipelineStep"></PipelineStepSelection>
+        <PipelineStepSelection class="col-md-9"></PipelineStepSelection>
     }
 </div>
 <hr />
 
 @if (_image != null)
 {
-    <Image Zoom="@Zoom" OnImageRendered="@(AddMatImageData)" ImageData="@_image"></Image>
-    for (var i = 0; i < _images.Where(im => im.PipelineAction != null).Count(); i++)
+    for (var i = 0; i < _images.Count; i++)
     {
-        <Image Zoom="@Zoom" OnImageRendered="@(AddMatImageData)" CurrentData="_images[i]"></Image>
+        <Image Zoom="@Zoom" CurrentData="_images[i]"></Image>
     }
 }

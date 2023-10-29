@@ -1,14 +1,27 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using OpenCvSharp;
 
 namespace ImageDetectionTests.Client.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
+        [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
         public int Zoom { get; set; } = 100;
         private string? _image;
-        private readonly List<MatImageData> _images = new();
+        private readonly List<Guid> _images = new();
+
+        protected override void OnInitialized()
+        {
+            ImageDataHandler.ImageChanged += ImageDataHandler_ImageChanged;
+            base.OnInitialized();
+        }
+
+        private void ImageDataHandler_ImageChanged(IList<Guid> obj)
+        {
+            _images.Clear();
+            _images.AddRange(obj);
+            StateHasChanged();
+        }
 
         public void ZoomChanged(ChangeEventArgs args)
         {
@@ -21,16 +34,12 @@ namespace ImageDetectionTests.Client.Pages
             using var memoryStream = new MemoryStream();
             await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
             _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+            ImageDataHandler.AddSourceImage(_image);
         }
 
-        public void AddMatImageData(MatImageData data)
+        public void Dispose()
         {
-            _images.Add(data);
-        }
-
-        public void AddPipelineStep(Action<Mat, MatImageData> action)
-        {
-            _images[^1].PipelineAction = dest => action.Invoke(dest, _images[^1]);
+            ImageDataHandler.ImageChanged -= ImageDataHandler_ImageChanged;
         }
     }
 }

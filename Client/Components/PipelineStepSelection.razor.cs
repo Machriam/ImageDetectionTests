@@ -38,6 +38,7 @@ public partial class PipelineStepSelection
         };
 
     private List<object> _parameters = new();
+    [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -46,14 +47,15 @@ public partial class PipelineStepSelection
 
     private PipelineStep? _selectedStep;
 
-    public async Task AddFilter()
+    public Task AddFilter()
     {
-        if (_selectedStep == null) return;
-        await FilterAddRequested.InvokeAsync((dest, data) =>
+        if (_selectedStep == null) return Task.CompletedTask;
+        ImageDataHandler.AddImage((dest, data) =>
         {
             using var source = data.CreateMatFromRGBA();
             _selectedStep.Action(source, dest, _parameters.ToArray());
         });
+        return Task.CompletedTask;
     }
 
     [Parameter(CaptureUnmatchedValues = true)]

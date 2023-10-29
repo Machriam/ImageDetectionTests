@@ -4,20 +4,21 @@
 
 @code {
     ElementReference canvasSrcRef;
-    [Parameter] public string ImageData { get; set; } = "";
-    [Parameter] public MatImageData? CurrentData { get; set; }
+    [Inject] IImageDataHandler ImageDataHandler { get; set; } = default!;
+    [Parameter] public Guid CurrentData { get; set; }
     [Parameter] public int Zoom { get; set; } = 100;
-    [Parameter] public EventCallback<MatImageData> OnImageRendered { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        if (CurrentData?.PipelineAction != null) await RenderPipelineImage(CurrentData.PipelineAction);
-        else if (!string.IsNullOrEmpty(ImageData)) await RenderImage(ImageData);
+        var data = ImageDataHandler.GetRenderData(CurrentData);
+        if (!string.IsNullOrEmpty(data.OriginalImage)) await RenderImage(data.OriginalImage);
+        else if (data.PipelineAction != null) await RenderPipelineImage(data.PipelineAction);
         await base.OnAfterRenderAsync(firstRender);
     }
     public async Task RenderImage(string image)
     {
+        Console.WriteLine("render im");
         using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
         using var canvasSrcCtx = canvasSrcEl.Get2DContext();
         using var src = new Mat();
@@ -28,6 +29,7 @@
     }
     public async Task RenderPipelineImage(Action<Mat> pipelineAction)
     {
+        Console.WriteLine("render pipe");
         using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
         using var canvasSrcCtx = canvasSrcEl.Get2DContext();
         using var dest = new Mat();
@@ -37,12 +39,12 @@
     }
     public async Task InvokePictureRendered(Mat src)
     {
-        await OnImageRendered.InvokeAsync(new MatImageData()
+        await ImageDataHandler.ImageRendered(new MatImageData()
             {
-                PipelineStep = CurrentData?.PipelineStep + 1 ?? 1,
-                RGBABytes = src.GetRGBABytes(),
+                Guid = CurrentData,
                 Height = src.Height,
-                Width = src.Width
+                Width = src.Width,
+                RGBABytes = src.GetRGBABytes()
             });
     }
 }
