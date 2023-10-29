@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using OpenCvSharp;
 
@@ -5,8 +6,15 @@ namespace ImageDetectionTests.Client.Pages
 {
     public partial class Index
     {
+        public int Zoom { get; set; } = 100;
         private string? _image;
         private readonly List<MatImageData> _images = new();
+
+        public void ZoomChanged(ChangeEventArgs args)
+        {
+            var newZoom = args.Value?.ToString() ?? "100";
+            Zoom = (int)float.Parse(newZoom);
+        }
 
         public async Task OnFileChanged(InputFileChangeEventArgs args)
         {

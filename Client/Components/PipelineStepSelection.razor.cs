@@ -56,12 +56,16 @@ public partial class PipelineStepSelection
         });
     }
 
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; } = new();
+
     [Parameter] public EventCallback<Action<Mat, MatImageData>> FilterAddRequested { get; set; }
 
     public void SelectedStepChanged(ChangeEventArgs args)
     {
         var stepName = (string?)args.Value;
         _parameters = new();
+        _selectedStep = null;
         if (string.IsNullOrEmpty(stepName)) return;
         _selectedStep = PossibleSteps.First(ps => ps.Name == stepName);
         foreach (var item in _selectedStep.TypeDictionary.OrderBy(t => t.Key.Position)) _parameters.Add(TranslateType(item.Value));

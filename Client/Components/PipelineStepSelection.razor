@@ -1,24 +1,26 @@
-﻿<select @onchange="SelectedStepChanged">
-    @foreach (var step in PossibleSteps)
-    {
+﻿<div style="height:15vh" class="row @(string.Join(' ',Attributes.Where(a=>a.Key=="class").Select(a=>a.Value)))">
+    <select style="height:30%" class="form-control col-md-2" @onchange="SelectedStepChanged">
         <option></option>
-        <option value="@step.Name">@step.Name</option>
-    }
-</select>
-@if (_selectedStep != null)
-{
-    @foreach (var param in _selectedStep.TypeDictionary)
-    {
-        @if (new[] { TypeCode.Int16, TypeCode.UInt16, TypeCode.UInt32, TypeCode.Int64, TypeCode.UInt64, TypeCode.Int32 }.Contains(param.Value))
+        @foreach (var step in PossibleSteps)
         {
-            <label>@param.Key.Name</label>
-            <input @onchange="@(value=>_parameters[param.Key.Position]=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
-                   type="number"
-                   class="form-control"
-                   value="@_parameters[param.Key.Position]" />
+            <option value="@step.Name">@step.Name</option>
+        }
+    </select>
+    @if (_selectedStep != null)
+    {
+        @foreach (var param in _selectedStep.TypeDictionary)
+        {
+            @if (new[] { TypeCode.Int16, TypeCode.UInt16, TypeCode.UInt32, TypeCode.Int64, TypeCode.UInt64, TypeCode.Int32 }.Contains(param.Value))
+            {
+                <div class="col-md-3">
+                    <label class="col-form-label">@param.Key.Name</label>
+                    <input @onchange="@(value=>_parameters[param.Key.Position]=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
+                           type="number"
+                           class="form-control"
+                           value="@_parameters[param.Key.Position]" />
+                </div>
+            }
         }
     }
-}
-<button @onclick="@AddFilter" class="btn btn-primary">Add Step</button>
-
-
+    <button style="height:30%" @onclick="@AddFilter" class="btn btn-primary">Add Step</button>
+</div>

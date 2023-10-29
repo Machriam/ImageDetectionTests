@@ -1,11 +1,12 @@
 ﻿@using OpenCvSharp;
 @using SpawnDev.BlazorJS.JSObjects;
-<canvas style="zoom: 100%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
+<canvas style="zoom: @(Zoom)%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
 
 @code {
     ElementReference canvasSrcRef;
     [Parameter] public string ImageData { get; set; } = "";
     [Parameter] public MatImageData? CurrentData { get; set; }
+    [Parameter] public int Zoom { get; set; } = 100;
     [Parameter] public EventCallback<MatImageData> OnImageRendered { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

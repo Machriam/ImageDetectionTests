@@ -5,16 +5,23 @@
 <PageTitle>Index</PageTitle>
 
 <div class="col-md-12 row">
-    <InputFile OnChange="@(OnFileChanged)"></InputFile>
-    <PipelineStepSelection FilterAddRequested="AddPipelineStep"></PipelineStepSelection>
+    <div class="col-md-3">
+        <label>Zoom</label>
+        <input type="range" class="form-range" min="10" max="100" step="1" value="@Zoom" @onchange="ZoomChanged" />
+        <InputFile class="col-md-12 form-control" OnChange="@(OnFileChanged)"></InputFile>
+    </div>
+    @if (_image != null)
+    {
+        <PipelineStepSelection class="col-md-9" FilterAddRequested="AddPipelineStep"></PipelineStepSelection>
+    }
 </div>
 <hr />
 
 @if (_image != null)
 {
-    <Image OnImageRendered="@(AddMatImageData)" ImageData="@_image"></Image>
+    <Image Zoom="@Zoom" OnImageRendered="@(AddMatImageData)" ImageData="@_image"></Image>
     for (var i = 0; i < _images.Where(im => im.PipelineAction != null).Count(); i++)
     {
-        <Image OnImageRendered="@(AddMatImageData)" CurrentData="_images[i]"></Image>
+        <Image Zoom="@Zoom" OnImageRendered="@(AddMatImageData)" CurrentData="_images[i]"></Image>
     }
 }
