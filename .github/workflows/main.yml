@@ -15,10 +15,20 @@ jobs:
       - name: Install Workload
         run: dotnet workload install wasm-tools
       - name: Publish
+        working-directory: ./Server
         run: dotnet publish -c Release -o Release --self-contained true -r debian.10-x64 ImageDetectionTests.Server.csproj
+      - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
+        working-directory: ./Server
+        run: sed -i 's/<base href="\/" \/>/<base href="\/ImageDetectionTests\/" \/>/g' ./Release/wwwroot/index.html
+      - name: Add .nojekyll file
+        working-directory: ./Server
+        run: touch ./Release/wwwroot/.nojekyll
+      - name: copy index.html to 404.html
+        working-directory: ./Server
+        run: cp Release/wwwroot/index.html Release/wwwroot/404.html
       - name: Copy wwwroot to Github Pages
-        uses: JamesIves/github-pages-deploy-action@4.4.3
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: Release/wwwroot
+          FOLDER: Server/Release/wwwroot
