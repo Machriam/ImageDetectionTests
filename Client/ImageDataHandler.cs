@@ -1,6 +1,5 @@
 ﻿namespace ImageDetectionTests.Client;
 
-using OpenCvSharp;
 using System;
 
 public interface IImageDataHandler
@@ -9,7 +8,7 @@ public interface IImageDataHandler
 
     event Action<Guid>? ImageSelected;
 
-    void AddImage(Action<Mat, MatImageData> action);
+    void AddImage(PipelineStep action, List<object> parameters);
 
     void AddSourceImage(string image);
 
@@ -59,22 +58,24 @@ public class ImageDataHandler : IImageDataHandler
 
     public Task ImageRendered(MatImageData data)
     {
-        var entry = _imageData.First(d => d.Guid == data.Guid);
+        var (entry, index) = _imageData.WithIndex().First(d => d.Item.Guid == data.Guid);
         entry.RGBABytes = data.RGBABytes;
         entry.Height = data.Height;
         entry.Width = data.Width;
+        if (index != 0) entry.PreviousImage = _imageData[index - 1].Guid;
         return Task.CompletedTask;
     }
 
-    public void AddImage(Action<Mat, MatImageData> action)
+    public void AddImage(PipelineStep action, List<object> parameters)
     {
         var (previousData, index) = _selectedImage == null ?
             (_imageData.Last(), _imageData.Count - 1) :
             _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
         _imageData.Insert(index + 1, new MatImageData()
         {
-            BaseAction = action,
-            PipelineAction = dest => action.Invoke(dest, previousData),
+            Step = action,
+            StepParameter = parameters,
+            PreviousImage = previousData.Guid
         });
         InvokeImageChanged();
     }
@@ -89,14 +90,10 @@ public class ImageDataHandler : IImageDataHandler
     {
         if (_selectedImage == null) return;
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
-        if (!string.IsNullOrEmpty(image.OriginalImage))
-        {
-            Clear();
-            return;
-        }
+        if (index == 0) { Clear(); return; }
+
         _imageData.Remove(image);
-        if (_imageData.Count > index && _imageData[index].BaseAction != null)
-            _imageData[index].PipelineAction = dest => _imageData[index].BaseAction!(dest, _imageData[index - 1]);
+        if (index < _imageData.Count) _imageData[index].PreviousImage = _imageData[index - 1].Guid;
         InvokeImageChanged();
         _selectedImage = null;
     }

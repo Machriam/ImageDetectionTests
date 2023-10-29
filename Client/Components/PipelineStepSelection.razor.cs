@@ -60,11 +60,7 @@ public partial class PipelineStepSelection
     public Task AddFilter()
     {
         if (_selectedStep == null) return Task.CompletedTask;
-        ImageDataHandler.AddImage((dest, data) =>
-        {
-            using var source = data.CreateMatFromRGBA();
-            _selectedStep.Action(source, dest, _parameters.ToArray());
-        });
+        ImageDataHandler.AddImage(_selectedStep, _parameters);
         return Task.CompletedTask;
     }
 
