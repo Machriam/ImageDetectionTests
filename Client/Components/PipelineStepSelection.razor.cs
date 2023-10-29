@@ -10,7 +10,7 @@ public partial class PipelineStepSelection
             new PipelineStep()
             {
                 Name = "Canny",
-                Action = (src, dest, p) => Cv2.Canny(src, dest, (int)p[0], (int)p[1]),
+                Action = (src, dest, p) =>  Cv2.Canny(src, dest, (int)p[0], (int)p[1]),
                 TypeDictionary = new()
                 {
                     {

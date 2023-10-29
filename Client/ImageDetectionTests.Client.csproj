@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<WasmBuildNative>true</WasmBuildNative>
+		<WasmNativeStrip>false</WasmNativeStrip>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<WasmNativeStrip>false</WasmNativeStrip>
