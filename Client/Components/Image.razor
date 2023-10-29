@@ -18,10 +18,18 @@
     {
         if (!firstRender) return;
         ImageDataHandler.ImageSelected += OnImageSelected;
+        ImageDataHandler.ReRenderImage += OnReRenderImage;
         var data = ImageDataHandler.GetRenderData(CurrentData);
         if (data.PreviousImage == null) await RenderImage(data.OriginalImage);
         else await RenderPipelineImage(data);
         await base.OnAfterRenderAsync(firstRender);
+    }
+    public async Task OnReRenderImage(Guid guid)
+    {
+        if (CurrentData != guid) return;
+        var data = ImageDataHandler.GetRenderData(CurrentData);
+        await RenderPipelineImage(data);
+        StateHasChanged();
     }
     public void OnImageSelected(Guid guid)
     {
@@ -37,7 +45,6 @@
         await src.LoadImageURL(image);
         src.DrawOnCanvas(canvasSrcCtx, true);
         await InvokePictureRendered(src);
-
     }
     public async Task RenderPipelineImage(MatImageData pipelineAction)
     {

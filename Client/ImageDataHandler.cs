@@ -8,6 +8,8 @@ public interface IImageDataHandler
 
     event Action<Guid>? ImageSelected;
 
+    event Func<Guid, Task>? ReRenderImage;
+
     void AddImage(PipelineStep action, List<object> parameters);
 
     void AddSourceImage(string image);
@@ -35,6 +37,8 @@ public class ImageDataHandler : IImageDataHandler
     public event Action<IList<Guid>>? ImageChanged;
 
     public event Action<Guid>? ImageSelected;
+
+    public event Func<Guid, Task>? ReRenderImage;
 
     public void AddSourceImage(string image)
     {
@@ -78,6 +82,7 @@ public class ImageDataHandler : IImageDataHandler
             PreviousImage = previousData.Guid
         });
         InvokeImageChanged();
+        UpdateFromIndex(index);
     }
 
     public void SelectImage(Guid guid)
@@ -96,6 +101,16 @@ public class ImageDataHandler : IImageDataHandler
         if (index < _imageData.Count) _imageData[index].PreviousImage = _imageData[index - 1].Guid;
         InvokeImageChanged();
         _selectedImage = null;
+        UpdateFromIndex(index);
+    }
+
+    public async Task UpdateFromIndex(int index)
+    {
+        foreach (var image in _imageData.WithIndex()
+            .Where(d => d.Index >= index && d.Index > 0))
+        {
+            ReRenderImage?.Invoke(image.Item.Guid);
+        }
     }
 
     public void Clear()

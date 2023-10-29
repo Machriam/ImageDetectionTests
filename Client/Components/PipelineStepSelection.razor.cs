@@ -3,6 +3,16 @@ using OpenCvSharp;
 
 namespace ImageDetectionTests.Client.Components;
 
+public class StepParameter
+{
+    public StepParameter Clone()
+    {
+        return (StepParameter)MemberwiseClone();
+    }
+
+    public object Value { get; set; } = new();
+}
+
 public partial class PipelineStepSelection
 {
     private readonly List<PipelineStep> PossibleSteps = new()
@@ -37,7 +47,7 @@ public partial class PipelineStepSelection
             }
         };
 
-    private List<object> _parameters = new();
+    private List<StepParameter> _parameters = new();
     [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
 
     protected override void OnInitialized()
@@ -60,7 +70,7 @@ public partial class PipelineStepSelection
     public Task AddFilter()
     {
         if (_selectedStep == null) return Task.CompletedTask;
-        ImageDataHandler.AddImage(_selectedStep, _parameters);
+        ImageDataHandler.AddImage(_selectedStep, _parameters.ConvertAll(p => p.Clone().Value) ?? new());
         return Task.CompletedTask;
     }
 
@@ -76,7 +86,8 @@ public partial class PipelineStepSelection
         _selectedStep = null;
         if (string.IsNullOrEmpty(stepName)) return;
         _selectedStep = PossibleSteps.First(ps => ps.Name == stepName);
-        foreach (var item in _selectedStep.TypeDictionary.OrderBy(t => t.Key.Position)) _parameters.Add(TranslateType(item.Value));
+        foreach (var item in _selectedStep.TypeDictionary.OrderBy(t => t.Key.Position))
+            _parameters.Add(new() { Value = TranslateType(item.Value) });
     }
 
     private object TranslateType(TypeCode typeCode)

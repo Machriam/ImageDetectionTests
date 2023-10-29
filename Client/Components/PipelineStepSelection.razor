@@ -14,7 +14,7 @@
             {
                 <div class="col-md-3">
                     <label class="col-form-label">@param.Key.Name</label>
-                    <input @onchange="@(value=>_parameters[param.Key.Position]=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
+                    <input @onchange="@(value=>_parameters[param.Key.Position].Value=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
                            type="number"
                            class="form-control"
                            value="@_parameters[param.Key.Position]" />
