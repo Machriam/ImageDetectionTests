@@ -18,11 +18,11 @@ public interface IImageDataHandler
 
     Task ImageRendered(MatImageData data);
 
-    void InvokeImageChanged();
+    Task InvokeImageChanged();
 
-    void RemoveSelectedImage();
+    Task RemoveSelectedImage();
 
-    void SelectImage(Guid guid);
+    Task SelectImage(Guid guid);
 
     void UpdateImageAt();
 
@@ -34,25 +34,25 @@ public class ImageDataHandler : IImageDataHandler
     private readonly List<MatImageData> _imageData = new();
     private Guid? _selectedImage;
 
-    public event Action<IList<Guid>>? ImageChanged;
+    public event Func<IList<Guid>, Task>? ImageChanged;
 
-    public event Action<Guid>? ImageSelected;
+    public event Func<Guid, Task>? ImageSelected;
 
     public event Func<Guid, Task>? ReRenderImage;
 
-    public void AddSourceImage(string image)
+    public async Task AddSourceImage(string image)
     {
         _imageData.Clear();
         _imageData.Add(new MatImageData()
         {
             OriginalImage = image,
         });
-        InvokeImageChanged();
+        await InvokeImageChanged();
     }
 
-    public void InvokeImageChanged()
+    public async Task InvokeImageChanged()
     {
-        ImageChanged?.Invoke(_imageData.ConvertAll(d => d.Guid));
+        await (ImageChanged?.Invoke(_imageData.ConvertAll(d => d.Guid)) ?? Task.CompletedTask);
     }
 
     public MatImageData GetRenderData(Guid guid)
@@ -70,7 +70,7 @@ public class ImageDataHandler : IImageDataHandler
         return Task.CompletedTask;
     }
 
-    public void AddImage(PipelineStep action, List<object> parameters)
+    public async Task AddImage(PipelineStep action, List<object> parameters)
     {
         var (previousData, index) = _selectedImage == null ?
             (_imageData.Last(), _imageData.Count - 1) :
@@ -81,17 +81,17 @@ public class ImageDataHandler : IImageDataHandler
             StepParameter = parameters,
             PreviousImage = previousData.Guid
         });
-        InvokeImageChanged();
-        UpdateFromIndex(index);
+        await InvokeImageChanged();
+        await UpdateFromIndex(index);
     }
 
-    public void SelectImage(Guid guid)
+    public async Task SelectImage(Guid guid)
     {
         _selectedImage = guid;
-        ImageSelected?.Invoke(guid);
+        await (ImageSelected?.Invoke(guid) ?? Task.CompletedTask);
     }
 
-    public void RemoveSelectedImage()
+    public async Task RemoveSelectedImage()
     {
         if (_selectedImage == null) return;
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
@@ -99,9 +99,9 @@ public class ImageDataHandler : IImageDataHandler
 
         _imageData.Remove(image);
         if (index < _imageData.Count) _imageData[index].PreviousImage = _imageData[index - 1].Guid;
-        InvokeImageChanged();
+        await InvokeImageChanged();
         _selectedImage = null;
-        UpdateFromIndex(index);
+        await UpdateFromIndex(index);
     }
 
     public async Task UpdateFromIndex(int index)
@@ -109,15 +109,15 @@ public class ImageDataHandler : IImageDataHandler
         foreach (var image in _imageData.WithIndex()
             .Where(d => d.Index >= index && d.Index > 0))
         {
-            ReRenderImage?.Invoke(image.Item.Guid);
+            await (ReRenderImage?.Invoke(image.Item.Guid) ?? Task.CompletedTask);
         }
     }
 
-    public void Clear()
+    public async Task Clear()
     {
         _imageData.Clear();
         _selectedImage = null;
-        InvokeImageChanged();
+        await InvokeImageChanged();
     }
 
     public void UpdateImageAt()
