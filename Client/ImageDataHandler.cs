@@ -4,15 +4,15 @@ using System;
 
 public interface IImageDataHandler
 {
-    event Action<IList<Guid>>? ImageChanged;
+    event Func<IList<Guid>, Task>? ImageChanged;
 
-    event Action<Guid>? ImageSelected;
+    event Func<Guid, Task>? ImageSelected;
 
     event Func<Guid, Task>? ReRenderImage;
 
-    void AddImage(PipelineStep action, List<object> parameters);
+    Task AddImage(PipelineStep action, List<object> parameters);
 
-    void AddSourceImage(string image);
+    Task AddSourceImage(string image);
 
     MatImageData GetRenderData(Guid guid);
 
@@ -24,9 +24,9 @@ public interface IImageDataHandler
 
     Task SelectImage(Guid guid);
 
-    void UpdateImageAt();
+    Task UpdateImageAt();
 
-    void Clear();
+    Task Clear();
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -95,7 +95,7 @@ public class ImageDataHandler : IImageDataHandler
     {
         if (_selectedImage == null) return;
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
-        if (index == 0) { Clear(); return; }
+        if (index == 0) { await Clear(); return; }
 
         _imageData.Remove(image);
         if (index < _imageData.Count) _imageData[index].PreviousImage = _imageData[index - 1].Guid;
@@ -120,7 +120,8 @@ public class ImageDataHandler : IImageDataHandler
         await InvokeImageChanged();
     }
 
-    public void UpdateImageAt()
+    public Task UpdateImageAt()
     {
+        return Task.CompletedTask;
     }
 }

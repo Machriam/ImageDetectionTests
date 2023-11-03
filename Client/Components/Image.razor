@@ -31,11 +31,12 @@
         await RenderPipelineImage(data);
         StateHasChanged();
     }
-    public void OnImageSelected(Guid guid)
+    public Task OnImageSelected(Guid guid)
     {
         if (CurrentData != guid) _selected = false;
         else _selected = true;
         StateHasChanged();
+        return Task.CompletedTask;
     }
     public async Task RenderImage(string image)
     {

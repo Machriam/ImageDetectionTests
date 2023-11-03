@@ -16,11 +16,12 @@ namespace ImageDetectionTests.Client.Pages
             base.OnInitialized();
         }
 
-        private void ImageDataHandler_ImageChanged(IList<Guid> obj)
+        private Task ImageDataHandler_ImageChanged(IList<Guid> obj)
         {
             _images.Clear();
             _images.AddRange(obj);
             StateHasChanged();
+            return Task.CompletedTask;
         }
 
         public void ZoomChanged(ChangeEventArgs args)
@@ -34,7 +35,7 @@ namespace ImageDetectionTests.Client.Pages
             using var memoryStream = new MemoryStream();
             await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
             _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
-            ImageDataHandler.AddSourceImage(_image);
+            await ImageDataHandler.AddSourceImage(_image);
         }
 
         public void Dispose()
