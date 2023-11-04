@@ -13,7 +13,7 @@
             @if (param.Value.ParamType == ParamType.Integer)
             {
                 <div class="col-md-3">
-                    <label class="col-form-label">@param.Value.Name</label>
+                    <label class="col-form-label">@param.Value.Name (Used: @(_parameters[param.Key].Value))</label>
                     <input @bind="_parameters[param.Key].RawInput" 
                     @bind:after="()=>ParameterChanged(param.Key,param.Value)"
                            type="number"
