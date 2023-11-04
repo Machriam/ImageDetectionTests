@@ -1,5 +1,7 @@
 ﻿namespace ImageDetectionTests.Client;
 
+using ImageDetectionTests.Client.Components;
+using ImageDetectionTests.Client.Extensions;
 using System;
 
 public interface IImageDataHandler
@@ -10,7 +12,9 @@ public interface IImageDataHandler
 
     event Func<Guid, Task>? ReRenderImage;
 
-    Task AddImage(PipelineStep action, List<object> parameters);
+    event Func<PipelineStep?, List<StepParameter>?, Task>? ImageParameterChanged;
+
+    Task AddImage(PipelineStep action, List<StepParameter> parameters);
 
     Task AddSourceImage(string image);
 
@@ -30,7 +34,7 @@ public interface IImageDataHandler
 
     Task InvokeSelectedImageChanged();
 
-    void UpdateImageParameter(List<object> parameter);
+    void UpdateImageParameter(List<StepParameter> parameter);
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -43,6 +47,8 @@ public class ImageDataHandler : IImageDataHandler
     public event Func<Guid, Task>? ImageSelected;
 
     public event Func<Guid, Task>? ReRenderImage;
+
+    public event Func<PipelineStep?, List<StepParameter>?, Task>? ImageParameterChanged;
 
     public async Task AddSourceImage(string image)
     {
@@ -84,13 +90,13 @@ public class ImageDataHandler : IImageDataHandler
         return Task.CompletedTask;
     }
 
-    public void UpdateImageParameter(List<object> parameter)
+    public void UpdateImageParameter(List<StepParameter> parameter)
     {
         if (_selectedImage == null) return;
         _imageData.First(d => d.Guid == _selectedImage).StepParameter = parameter;
     }
 
-    public async Task AddImage(PipelineStep action, List<object> parameters)
+    public async Task AddImage(PipelineStep action, List<StepParameter> parameters)
     {
         var (previousData, index) = _selectedImage == null ?
             (_imageData.Last(), _imageData.Count - 1) :
@@ -110,6 +116,8 @@ public class ImageDataHandler : IImageDataHandler
         _selectedImage = guid;
         if (_imageData.First(d => !string.IsNullOrEmpty(d.OriginalImage)).Guid == guid) _selectedImage = null;
         await (ImageSelected?.Invoke(_selectedImage ?? Guid.Empty) ?? Task.CompletedTask);
+        var imageParameter = _imageData.Find(d => d.Guid == _selectedImage);
+        await (ImageParameterChanged?.Invoke(imageParameter?.Step, imageParameter?.StepParameter) ?? Task.CompletedTask);
     }
 
     public async Task RemoveSelectedImage()

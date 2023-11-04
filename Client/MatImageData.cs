@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using ImageDetectionTests.Client.Components;
+using OpenCvSharp;
 using System.Runtime.InteropServices;
 
 namespace ImageDetectionTests.Client;
@@ -9,7 +10,7 @@ public class MatImageData
     public Guid Guid { get; init; } = Guid.NewGuid();
     public Guid? PreviousImage { get; set; }
     public PipelineStep Step { get; set; } = new();
-    public List<object> StepParameter { get; set; } = new();
+    public List<StepParameter> StepParameter { get; set; } = new();
     public byte[] RGBABytes { get; set; } = System.Array.Empty<byte>();
     public int Width { get; set; }
     public int Height { get; set; }
@@ -21,7 +22,7 @@ public class MatImageData
         return dest =>
         {
             using var source = data.CreateMatFromRGBA();
-            Step.Action(source, dest, StepParameter.ToArray());
+            Step.Action(source, dest, StepParameter.Select(p => p.Value).ToArray());
         };
     }
 

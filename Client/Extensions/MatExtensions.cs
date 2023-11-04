@@ -1,4 +1,4 @@
-﻿namespace ImageDetectionTests.Client;
+﻿namespace ImageDetectionTests.Client.Extensions;
 
 using OpenCvSharp;
 using SpawnDev.BlazorJS.JSObjects;
@@ -33,7 +33,7 @@ public static class MatExtensions
 
     public static void SetHomography(this Mat mat, byte[] homographyBytes)
     {
-        mat.Create(new OpenCvSharp.Size(3, 3), MatType.CV_64FC1);
+        mat.Create(new Size(3, 3), MatType.CV_64FC1);
         mat.SetBytes(homographyBytes);
     }
 
@@ -142,7 +142,7 @@ public static class MatExtensions
         using var imageData = context.GetImageData(0, 0, image.Width, image.Height);
         using var uint8ClampedArray = imageData.Data;
         var rgbaBytes = uint8ClampedArray.ReadBytes();
-        mat.Create(new OpenCvSharp.Size(image.Width, image.Height), MatType.CV_8UC4);
+        mat.Create(new Size(image.Width, image.Height), MatType.CV_8UC4);
         Marshal.Copy(rgbaBytes, 0, mat.DataStart, rgbaBytes.Length);
     }
 }

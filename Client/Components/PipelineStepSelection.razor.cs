@@ -1,4 +1,4 @@
-using global::Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using OpenCvSharp;
 
 namespace ImageDetectionTests.Client.Components;
@@ -10,6 +10,7 @@ public class StepParameter
         return (StepParameter)MemberwiseClone();
     }
 
+    public string RawInput { get; set; } = "";
     public object Value { get; set; } = new();
 }
 
@@ -52,7 +53,16 @@ public partial class PipelineStepSelection
 
     protected override void OnInitialized()
     {
+        ImageDataHandler.ImageParameterChanged += ImageDataHandler_ImageParameterChanged;
         base.OnInitialized();
+    }
+
+    private Task ImageDataHandler_ImageParameterChanged(PipelineStep? arg1, List<StepParameter>? arg2)
+    {
+        _parameters = arg2 ?? new();
+        _selectedStep = arg1;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private PipelineStep? _selectedStep;
@@ -70,7 +80,7 @@ public partial class PipelineStepSelection
     public Task AddFilter()
     {
         if (_selectedStep == null) return Task.CompletedTask;
-        ImageDataHandler.AddImage(_selectedStep, _parameters.ConvertAll(p => p.Clone().Value) ?? new());
+        ImageDataHandler.AddImage(_selectedStep, _parameters.ConvertAll(p => p.Clone()) ?? new());
         return Task.CompletedTask;
     }
 
@@ -79,14 +89,14 @@ public partial class PipelineStepSelection
 
     [Parameter] public EventCallback<Action<Mat, MatImageData>> FilterAddRequested { get; set; }
 
-    public async Task ParameterChanged(ChangeEventArgs args, int position, string name, ParamType type)
+    public async Task ParameterChanged(int position, string name, ParamType type)
     {
-        var text = args.Value?.ToString();
+        var text = _parameters[position].RawInput;
         if (type == ParamType.Integer)
         {
             _parameters[position].Value = int.TryParse(text, out var number) ? number : 0;
         }
-        ImageDataHandler.UpdateImageParameter(_parameters.ConvertAll(p => p.Clone().Value));
+        ImageDataHandler.UpdateImageParameter(_parameters.ConvertAll(p => p.Clone()));
         await ImageDataHandler.InvokeSelectedImageChanged();
     }
 

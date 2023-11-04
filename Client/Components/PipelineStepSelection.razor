@@ -3,7 +3,7 @@
         <option></option>
         @foreach (var step in PossibleSteps)
         {
-            <option value="@step.Name">@step.Name</option>
+            <option selected="@(step.Name==_selectedStep?.Name)" value="@step.Name">@step.Name</option>
         }
     </select>
     @if (_selectedStep != null)
@@ -14,10 +14,11 @@
             {
                 <div class="col-md-3">
                     <label class="col-form-label">@param.Key.Name</label>
-                    <input @onchange="@(async arg=>await ParameterChanged(arg,param.Key.Position,param.Key.Name,param.Value))"
+                    <input @bind="_parameters[param.Key.Position].RawInput"
+                    @bind:after="()=>ParameterChanged(param.Key.Position,param.Key.Name,param.Value)"
                            type="number"
-                           class="form-control"
-                           value="@_parameters[param.Key.Position]" />
+                           class="form-control" />
+
                 </div>
             }
         }

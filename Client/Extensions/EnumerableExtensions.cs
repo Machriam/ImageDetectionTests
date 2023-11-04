@@ -1,4 +1,4 @@
-﻿namespace ImageDetectionTests.Client;
+﻿namespace ImageDetectionTests.Client.Extensions;
 
 using System;
 
@@ -85,7 +85,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable<List<T?>> SelectMovingWindowsAround<T>(this IEnumerable<T> values, int windowSize)
     {
-        var countBefore = (windowSize / 2) - (windowSize % 2 == 0 ? 1 : 0);
+        var countBefore = windowSize / 2 - (windowSize % 2 == 0 ? 1 : 0);
         var valueList = values.ToList();
         for (var i = 0; i < valueList.Count; i++)
         {
@@ -137,7 +137,7 @@ public static class EnumerableExtensions
         if (parts <= 0) throw new ArgumentOutOfRangeException("parts must be greater zero");
         var count = list.Count();
         var basePartLength = count / parts;
-        var startOfOffsetItems = count - (basePartLength * parts);
+        var startOfOffsetItems = count - basePartLength * parts;
         var result = new List<IEnumerable<T>>();
         for (var i = 0; i < parts; i++)
         {
