@@ -14,7 +14,7 @@ public class StepParameter
     public object Value { get; set; } = new();
 }
 
-public partial class PipelineStepSelection
+public partial class PipelineStepSelection : IDisposable
 {
     private List<StepParameter> _parameters = new();
     [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
@@ -29,11 +29,13 @@ public partial class PipelineStepSelection
     {
         _parameters = arg2 ?? new();
         _selectedStep = arg1;
+        _selectedStepName = _selectedStep?.Name ?? "";
         StateHasChanged();
         return Task.CompletedTask;
     }
 
     private PipelineStep? _selectedStep;
+    private string _selectedStepName = "";
 
     public void Clear()
     {
@@ -65,16 +67,20 @@ public partial class PipelineStepSelection
         await ImageDataHandler.InvokeSelectedImageChanged();
     }
 
-    public async Task SelectedStepChanged(ChangeEventArgs args)
+    public async Task SelectedStepChanged()
     {
-        var stepName = (string?)args.Value;
         _parameters = new();
         _selectedStep = null;
-        if (string.IsNullOrEmpty(stepName)) return;
-        _selectedStep = PipelineStepDefinition.PossibleSteps.First(ps => ps.Name == stepName);
+        if (string.IsNullOrEmpty(_selectedStepName)) return;
+        _selectedStep = PipelineStepDefinition.PossibleSteps.First(ps => ps.Name == _selectedStepName);
         foreach (var item in _selectedStep.Value.ParamInfoByIndex.OrderBy(t => t.Key))
             _parameters.Add(new() { RawInput = item.Value.DefaultValue.ToString() ?? "", Value = item.Value.DefaultValue });
         if (_selectedStep == null || _parameters.Count == 0) return;
         await ImageDataHandler.SelectedStepChanged(_selectedStep.Value, _parameters);
+    }
+
+    public void Dispose()
+    {
+        ImageDataHandler.ImageParameterChanged -= ImageDataHandler_ImageParameterChanged;
     }
 }
