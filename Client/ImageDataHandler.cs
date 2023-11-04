@@ -98,17 +98,13 @@ public class ImageDataHandler : IImageDataHandler
 
     public async Task AddImage(PipelineStep action, List<StepParameter> parameters)
     {
-        var (previousData, index) = _selectedImage == null ?
-            (_imageData.Last(), _imageData.Count - 1) :
-            _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
-        _imageData.Insert(index + 1, new MatImageData()
+        _imageData.Insert(_imageData.Count, new MatImageData()
         {
             Step = action,
             StepParameter = parameters,
-            PreviousImage = previousData.Guid
+            PreviousImage = _imageData.Last().Guid,
         });
         await InvokeImageChanged();
-        await UpdateFromIndex(index);
     }
 
     public async Task SelectImage(Guid guid)
