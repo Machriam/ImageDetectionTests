@@ -16,12 +16,12 @@ namespace ImageDetectionTests.Client.Pages
             base.OnInitialized();
         }
 
-        private Task ImageDataHandler_ImageChanged(IList<Guid> obj)
+        private async Task ImageDataHandler_ImageChanged(IList<Guid> obj)
         {
             _images.Clear();
             _images.AddRange(obj);
+            await Task.Delay(1);
             StateHasChanged();
-            return Task.CompletedTask;
         }
 
         public void ZoomChanged(ChangeEventArgs args)

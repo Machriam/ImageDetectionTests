@@ -122,8 +122,8 @@ public class ImageDataHandler : IImageDataHandler
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
         if (index == 0) { await Clear(); return; }
 
-        _imageData.Remove(image);
-        if (index < _imageData.Count) _imageData[index].PreviousImage = _imageData[index - 1].Guid;
+        if (index < _imageData.Count - 1) _imageData[index + 1].PreviousImage = _imageData[index - 1].Guid;
+        _imageData.RemoveAt(index);
         await InvokeImageChanged();
         _selectedImage = null;
         await UpdateFromIndex(index);
