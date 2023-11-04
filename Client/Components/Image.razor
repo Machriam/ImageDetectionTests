@@ -19,6 +19,7 @@
         if (!firstRender) return;
         ImageDataHandler.ImageSelected += OnImageSelected;
         ImageDataHandler.ReRenderImage += OnReRenderImage;
+        ImageDataHandler.ImageRemoved += OnImageRemoved;
         var data = ImageDataHandler.GetRenderData(CurrentData);
         if (data.PreviousImage == null) await RenderImage(data.OriginalImage);
         else await RenderPipelineImage(data);
@@ -30,6 +31,12 @@
         var data = ImageDataHandler.GetRenderData(CurrentData);
         await RenderPipelineImage(data);
         StateHasChanged();
+    }
+    public Task OnImageRemoved(Guid guid)
+    {
+        if (CurrentData != guid) return Task.CompletedTask;
+        Dispose();
+        return Task.CompletedTask;
     }
     public Task OnImageSelected(Guid guid)
     {
@@ -70,5 +77,7 @@
     public void Dispose()
     {
         ImageDataHandler.ImageSelected -= OnImageSelected;
+        ImageDataHandler.ReRenderImage -= OnReRenderImage;
+        ImageDataHandler.ImageRemoved -= OnImageRemoved;
     }
 }

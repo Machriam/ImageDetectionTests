@@ -14,6 +14,8 @@ public interface IImageDataHandler
 
     event Func<PipelineStep?, List<StepParameter>?, Task>? ImageParameterChanged;
 
+    event Func<Guid, Task>? ImageRemoved;
+
     Task AddImage(PipelineStep action, List<StepParameter> parameters);
 
     Task AddSourceImage(string image);
@@ -49,6 +51,8 @@ public class ImageDataHandler : IImageDataHandler
     public event Func<Guid, Task>? ImageSelected;
 
     public event Func<Guid, Task>? ReRenderImage;
+
+    public event Func<Guid, Task>? ImageRemoved;
 
     public event Func<PipelineStep?, List<StepParameter>?, Task>? ImageParameterChanged;
 
@@ -135,6 +139,7 @@ public class ImageDataHandler : IImageDataHandler
 
         if (index < _imageData.Count - 1) _imageData[index + 1].PreviousImage = _imageData[index - 1].Guid;
         _imageData.RemoveAt(index);
+        await (ImageRemoved?.Invoke(image.Guid) ?? Task.CompletedTask);
         await InvokeImageChanged();
         _selectedImage = null;
         await UpdateFromIndex(index);
