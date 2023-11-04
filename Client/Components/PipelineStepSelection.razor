@@ -10,11 +10,11 @@
     {
         @foreach (var param in _selectedStep.TypeDictionary)
         {
-            @if (new[] { TypeCode.Int16, TypeCode.UInt16, TypeCode.UInt32, TypeCode.Int64, TypeCode.UInt64, TypeCode.Int32 }.Contains(param.Value))
+            @if (param.Value == ParamType.Integer)
             {
                 <div class="col-md-3">
                     <label class="col-form-label">@param.Key.Name</label>
-                    <input @onchange="@(value=>_parameters[param.Key.Position].Value=int.TryParse(value.Value?.ToString(),out var number)?number:0)"
+                    <input @onchange="@(async arg=>await ParameterChanged(arg,param.Key.Position,param.Key.Name,param.Value))"
                            type="number"
                            class="form-control"
                            value="@_parameters[param.Key.Position]" />

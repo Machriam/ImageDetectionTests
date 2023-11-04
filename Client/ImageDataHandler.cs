@@ -27,6 +27,10 @@ public interface IImageDataHandler
     Task UpdateImageAt();
 
     Task Clear();
+
+    Task InvokeSelectedImageChanged();
+
+    void UpdateImageParameter(List<object> parameter);
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -50,6 +54,12 @@ public class ImageDataHandler : IImageDataHandler
         await InvokeImageChanged();
     }
 
+    public async Task InvokeSelectedImageChanged()
+    {
+        if (_selectedImage == null) return;
+        await (ReRenderImage?.Invoke(_selectedImage.Value) ?? Task.CompletedTask);
+    }
+
     public async Task InvokeImageChanged()
     {
         await (ImageChanged?.Invoke(_imageData.ConvertAll(d => d.Guid)) ?? Task.CompletedTask);
@@ -68,6 +78,12 @@ public class ImageDataHandler : IImageDataHandler
         entry.Width = data.Width;
         if (index != 0) entry.PreviousImage = _imageData[index - 1].Guid;
         return Task.CompletedTask;
+    }
+
+    public void UpdateImageParameter(List<object> parameter)
+    {
+        if (_selectedImage == null) return;
+        _imageData.First(d => d.Guid == _selectedImage).StepParameter = parameter;
     }
 
     public async Task AddImage(PipelineStep action, List<object> parameters)

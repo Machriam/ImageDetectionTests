@@ -25,11 +25,11 @@ public partial class PipelineStepSelection
                 {
                     {
                         (0, "threshold1"),
-                        TypeCode.Int32
+                        ParamType.Integer
                     },
                     {
                         (1, "threshold2"),
-                        TypeCode.Int32
+                        ParamType.Integer
                     }
                 }
             },
@@ -41,7 +41,7 @@ public partial class PipelineStepSelection
                 {
                     {
                         (0, "ksize"),
-                        TypeCode.Int32
+                        ParamType.Integer
                     }
                 }
             }
@@ -79,6 +79,17 @@ public partial class PipelineStepSelection
 
     [Parameter] public EventCallback<Action<Mat, MatImageData>> FilterAddRequested { get; set; }
 
+    public async Task ParameterChanged(ChangeEventArgs args, int position, string name, ParamType type)
+    {
+        var text = args.Value?.ToString();
+        if (type == ParamType.Integer)
+        {
+            _parameters[position].Value = int.TryParse(text, out var number) ? number : 0;
+        }
+        ImageDataHandler.UpdateImageParameter(_parameters.ConvertAll(p => p.Clone().Value));
+        await ImageDataHandler.InvokeSelectedImageChanged();
+    }
+
     public void SelectedStepChanged(ChangeEventArgs args)
     {
         var stepName = (string?)args.Value;
@@ -90,35 +101,15 @@ public partial class PipelineStepSelection
             _parameters.Add(new() { Value = TranslateType(item.Value) });
     }
 
-    private object TranslateType(TypeCode typeCode)
+    private object TranslateType(ParamType typeCode)
     {
         switch (typeCode)
         {
-            case TypeCode.Boolean:
-                return false;
-
-            case TypeCode.Int16:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.Int64:
-            case TypeCode.UInt64:
-            case TypeCode.Int32:
+            case ParamType.Integer:
                 return 0;
 
-            case TypeCode.Single:
-                return 0f;
-
-            case TypeCode.Double:
-                return 0d;
-
-            case TypeCode.Decimal:
-                return 0M;
-
-            case TypeCode.String:
-                return "";
-
             default:
-                throw new Exception("Unknown Type found");
+                throw new Exception("Not known Type");
         }
     }
 }
