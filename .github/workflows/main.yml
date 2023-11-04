@@ -12,6 +12,8 @@ jobs:
         uses: actions/setup-dotnet@v3.2.0
         with:
           dotnet-version: 7.0
+      - name: Install Packages
+        run: apt-get install uuid-runtime
       - name: Install Workload
         run: dotnet workload install wasm-tools
       - name: Publish
@@ -20,6 +22,9 @@ jobs:
       - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
         working-directory: ./Server
         run: sed -i 's/<base href="\/" \/>/<base href="\/ImageDetectionTests\/" \/>/g' ./Release/wwwroot/index.html
+      - name: Change version in index.html to not use cached data
+        working-directory: ./Server
+        run: sed -i 's/{version}/$(uuidgen)/g' ./Release/wwwroot/index.html
       - name: Add .nojekyll file
         working-directory: ./Server
         run: touch ./Release/wwwroot/.nojekyll
