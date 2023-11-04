@@ -65,7 +65,7 @@ public partial class PipelineStepSelection
         await ImageDataHandler.InvokeSelectedImageChanged();
     }
 
-    public void SelectedStepChanged(ChangeEventArgs args)
+    public async Task SelectedStepChanged(ChangeEventArgs args)
     {
         var stepName = (string?)args.Value;
         _parameters = new();
@@ -74,5 +74,7 @@ public partial class PipelineStepSelection
         _selectedStep = PipelineStepDefinition.PossibleSteps.First(ps => ps.Name == stepName);
         foreach (var item in _selectedStep.Value.ParamInfoByIndex.OrderBy(t => t.Key))
             _parameters.Add(new() { RawInput = item.Value.DefaultValue.ToString() ?? "", Value = item.Value.DefaultValue });
+        if (_selectedStep == null || _parameters.Count == 0) return;
+        await ImageDataHandler.SelectedStepChanged(_selectedStep.Value, _parameters);
     }
 }

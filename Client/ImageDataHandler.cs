@@ -35,6 +35,8 @@ public interface IImageDataHandler
     Task InvokeSelectedImageChanged();
 
     void UpdateImageParameter(List<StepParameter> parameter);
+
+    Task SelectedStepChanged(PipelineStep step, List<StepParameter> parameter);
 }
 
 public class ImageDataHandler : IImageDataHandler
@@ -68,6 +70,15 @@ public class ImageDataHandler : IImageDataHandler
         {
             await (ReRenderImage?.Invoke(_imageData[i].Guid) ?? Task.CompletedTask);
         }
+    }
+
+    public async Task SelectedStepChanged(PipelineStep step, List<StepParameter> parameter)
+    {
+        if (_selectedImage == null) return;
+        var image = _imageData.First(d => d.Guid == _selectedImage);
+        image.StepParameter = parameter;
+        image.Step = step;
+        await InvokeSelectedImageChanged();
     }
 
     public async Task InvokeImageChanged()
