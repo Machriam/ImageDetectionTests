@@ -57,7 +57,11 @@ public class ImageDataHandler : IImageDataHandler
     public async Task InvokeSelectedImageChanged()
     {
         if (_selectedImage == null) return;
-        await (ReRenderImage?.Invoke(_selectedImage.Value) ?? Task.CompletedTask);
+        var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
+        for (var i = index; i < _imageData.Count; i++)
+        {
+            await (ReRenderImage?.Invoke(_imageData[i].Guid) ?? Task.CompletedTask);
+        }
     }
 
     public async Task InvokeImageChanged()
@@ -104,7 +108,8 @@ public class ImageDataHandler : IImageDataHandler
     public async Task SelectImage(Guid guid)
     {
         _selectedImage = guid;
-        await (ImageSelected?.Invoke(guid) ?? Task.CompletedTask);
+        if (_imageData.First(d => !string.IsNullOrEmpty(d.OriginalImage)).Guid == guid) _selectedImage = null;
+        await (ImageSelected?.Invoke(_selectedImage ?? Guid.Empty) ?? Task.CompletedTask);
     }
 
     public async Task RemoveSelectedImage()
