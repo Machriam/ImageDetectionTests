@@ -13,7 +13,7 @@ jobs:
         with:
           dotnet-version: 7.0
       - name: Install Packages
-        run: apt-get install uuid-runtime
+        run: sudo apt-get install uuid-runtime
       - name: Install Workload
         run: dotnet workload install wasm-tools
       - name: Publish
