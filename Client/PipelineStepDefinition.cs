@@ -39,6 +39,13 @@ public static class PipelineStepDefinition
                 }
                 .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x)+(1-(IntConverter(a,x)%2)); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
+            new PipelineStep()
+    {
+        Name = "Equalize Grayscale Hist",
+                Action = (src, dest, p) => {
+                    Cv2.CvtColor(src,src,ColorConversionCodes.BGRA2GRAY);
+                    Cv2.EqualizeHist(src, dest); },
             }
 };
 }
