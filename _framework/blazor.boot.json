@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "ImageDetectionTests.Client.dll": "sha256-pmA+xazCKzegWHX4YrgUXbjvJ0u4IRPTDuYxSwMReTQ=",
+      "ImageDetectionTests.Client.dll": "sha256-zIHzUFSEGmLZNHK3ZIg1tSSs6dfbpKgcJgtYJPt82N4=",
       "ImageDetectionTests.Shared.dll": "sha256-XlbJpvOP65FlNWqQgW4r8Obk5Rq1LX8eWrJG5WYG8rs=",
       "Microsoft.AspNetCore.Components.dll": "sha256-39C4euUq6M6XDeWVTcjli5Y0zgsnbptCHpWYLNnd\/rI=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-uV1XmwH8hUygtuRXg2IY7i0oRRgnQbFnUG7krQsFsbs=",
