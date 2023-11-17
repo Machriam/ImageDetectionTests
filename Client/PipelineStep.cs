@@ -5,7 +5,8 @@ using System;
 
 public enum ParamType
 {
-    Integer
+    Integer,
+    Double
 }
 
 public struct PipelineStep
@@ -31,4 +32,5 @@ public struct ParamInfoCV
     public int MaxValue { get; init; }
     public int MinValue { get; init; }
     public object DefaultValue { get; init; } = new();
+    public object[] Values { get; init; } = Array.Empty<object>();
 }
