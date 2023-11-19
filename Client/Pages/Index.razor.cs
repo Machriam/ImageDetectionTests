@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
+using SpawnDev.BlazorJS;
 
 namespace ImageDetectionTests.Client.Pages
 {
     public partial class Index : IDisposable
     {
         [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
+        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         public int Zoom { get; set; } = 100;
         private string? _image;
         private readonly List<Guid> _images = new();
@@ -35,7 +38,7 @@ namespace ImageDetectionTests.Client.Pages
             using var memoryStream = new MemoryStream();
             await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
             _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
-            await ImageDataHandler.AddSourceImage(_image);
+            await JSRuntime.InvokeVoidAsync("openCvTest", _image);
         }
 
         public void Dispose()

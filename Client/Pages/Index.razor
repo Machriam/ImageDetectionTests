@@ -10,6 +10,7 @@
         <input type="range" class="form-range" min="10" max="200" step="1" value="@Zoom" @onchange="ZoomChanged" />
         <InputFile class="col-md-12 form-control" OnChange="@(OnFileChanged)"></InputFile>
     </div>
+    <canvas id="cvTest"></canvas>
     @if (_image != null)
     {
         <PipelineStepSelection class="col-md-9"></PipelineStepSelection>
