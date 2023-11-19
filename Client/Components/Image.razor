@@ -56,13 +56,13 @@
     }
     public async Task RenderPipelineImage(MatImageData pipelineAction)
     {
-        using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
-        using var canvasSrcCtx = canvasSrcEl.Get2DContext();
-        using var dest = new Mat();
-        var action = pipelineAction.GetAction(ImageDataHandler);
-        action(dest);
-        dest.DrawOnCanvas(canvasSrcCtx, true);
-        await InvokePictureRendered(dest);
+            using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
+            using var canvasSrcCtx = canvasSrcEl.Get2DContext();
+            using var dest = new Mat();
+            var action = pipelineAction.GetAction(ImageDataHandler);
+            action(dest);
+            dest.DrawOnCanvas(canvasSrcCtx, true);
+            await InvokePictureRendered(dest);
     }
     public async Task InvokePictureRendered(Mat src)
     {
