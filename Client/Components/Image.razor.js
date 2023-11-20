@@ -20,6 +20,38 @@ export function MedianBlur(sourceGuid, destGuid, params) {
     });
 }
 
+export function EqualizeGrayHist(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        cv.equalizeHist(src, dest);
+    });
+}
+
+export function EqualizeColorHist(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        let hsvPlanes = new cv.MatVector();
+        let mergedPlanes = new cv.MatVector();
+        cv.cvtColor(src, src, cv.COLOR_RGB2HSV, 0);
+        cv.split(src, hsvPlanes);
+        let H = hsvPlanes.get(0);
+        let S = hsvPlanes.get(1);
+        let V = hsvPlanes.get(2);
+        cv.equalizeHist(V, V);
+        mergedPlanes.push_back(H);
+        mergedPlanes.push_back(S);
+        mergedPlanes.push_back(V);
+        cv.merge(mergedPlanes, src);
+        cv.cvtColor(src, dest, cv.COLOR_HSV2RGB, 0);
+        hsvPlanes.delete();
+        mergedPlanes.delete();
+    });
+}
+export function GaussianBlur(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.GaussianBlur(src, dest, new cv.Size(0, 0), params[0], params[1]);
+    });
+}
+
 function InvokeStep(sourceGuid, destGuid, modifyImage) {
     document.getElementById(destGuid).getContext("2d", { willReadFrequently: true });
     const src = cv.imread(sourceGuid);

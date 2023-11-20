@@ -18,12 +18,30 @@ namespace ImageDetectionTests.Client.Core
 
         public async Task DrawSourceImage(Guid guid, string source)
         {
-            await _jsRuntime.ExecuteModuleFunction("DrawSourceImage", new List<object> { guid, source }, OpenCvModulePath);
+            await Execute(async () =>
+            {
+                await _jsRuntime.ExecuteModuleFunction("DrawSourceImage", new List<object> { guid, source }, OpenCvModulePath);
+            });
         }
 
         public async Task ExecutePipelineAction(string name, MatImageData data, params object[] parameter)
         {
-            await _jsRuntime.ExecuteModuleFunction(name, new List<object>() { data.PreviousImage!, data.Guid, parameter }, OpenCvModulePath);
+            await Execute(async () =>
+            {
+                await _jsRuntime.ExecuteModuleFunction(name, new List<object>() { data.PreviousImage!, data.Guid, parameter }, OpenCvModulePath);
+            });
+        }
+
+        private async Task Execute(Func<Task> function)
+        {
+            try
+            {
+                await function();
+            }
+            catch (Exception ex)
+            {
+                await _jsRuntime.InvokeVoidAsync("alert", ex.Message + "\n" + ex.InnerException?.Message + "\n" + ex.StackTrace);
+            }
         }
     }
 }

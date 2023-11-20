@@ -1,21 +1,9 @@
 ﻿namespace ImageDetectionTests.Client;
 
 using ImageDetectionTests.Client.Extensions;
-using System;
 
 public static class PipelineStepDefinition
 {
-    private static int IntConverter(object value, ParamInfoCV info, Func<int, int>? transform = null)
-    {
-        var success = int.TryParse(value.ToString(), out var result);
-        if (success)
-        {
-            result = Math.Max(Math.Min(result, info.MaxValue), info.MinValue);
-            return transform == null ? result : transform(result);
-        }
-        return (int)info.DefaultValue;
-    }
-
     public static readonly List<PipelineStep> PossibleSteps = new()
         {
             new PipelineStep()
@@ -23,10 +11,9 @@ public static class PipelineStepDefinition
                 Name = "Canny",
                 JsName="Canny",
                 ParamInfoByIndex = new[]{
-                   new ParamInfoCV(){Name="threshold1",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=100},
-                   new ParamInfoCV(){Name="threshold2",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=300},
+                   new ParamInfoCV(){Name="threshold1",ParamType=ParamType.Integer,MaxValue=1000f,MinValue=0f,DefaultValue=100},
+                   new ParamInfoCV(){Name="threshold2",ParamType=ParamType.Integer,MaxValue=1000f,MinValue=0f,DefaultValue=300},
                 }
-                .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
             new PipelineStep()
@@ -34,32 +21,32 @@ public static class PipelineStepDefinition
                 Name = "Median Blur",
                 JsName="MedianBlur",
                 ParamInfoByIndex = new[]{
-                   new ParamInfoCV(){Name="ksize",ParamType=ParamType.Integer,MaxValue=101,MinValue=3,DefaultValue=5},
+                   new ParamInfoCV(){Name="ksize",ParamType=ParamType.Integer,MaxValue=101,MinValue=3,DefaultValue=5,Transform=x=>(int)x+(1-((int)x%2))},
                 }
-                .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x)+(1-(IntConverter(a,x)%2)); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
-            /*
             new PipelineStep()
             {
                 Name = "Equalize Grayscale Hist",
-                Action = (src, dest, p) => {
-                    Cv2.CvtColor(src,src,ColorConversionCodes.BGRA2GRAY);
-                    Cv2.EqualizeHist(src, dest); },
+                JsName="EqualizeGrayHist"
+            },
+            new PipelineStep()
+            {
+                Name = "Equalize Color Hist",
+                JsName="EqualizeColorHist"
             },
             new PipelineStep()
             {
                 Name="Gaussian Blur",
-                Action = (src, dest, p) =>
-                {
-                    Cv2.GaussianBlur(src,dest,Size.Zero,(double)p[0],(double)p[1]);
-                },
+                JsName="GaussianBlur",
                 ParamInfoByIndex = new[]
                 {
-                    new ParamInfoCV(){Name="Sigma X",MinValue=0,MaxValue=9999,DefaultValue=0.5,ParamType=ParamType.Double},
-                    new ParamInfoCV(){Name="Sigma Y",MinValue=0,MaxValue=9999,DefaultValue=0.5,ParamType=ParamType.Double},
-                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+                    new ParamInfoCV(){Name="Sigma X",MinValue=0.1f,MaxValue=100f,DefaultValue=0.5,Step=0.1f,ParamType=ParamType.Double},
+                    new ParamInfoCV(){Name="Sigma Y",MinValue=0f,MaxValue=100f,DefaultValue=0.5,Step=0.1f,ParamType=ParamType.Double},
+                }
+                .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+            /*
             new PipelineStep()
             {
                 Name = "Invert",
