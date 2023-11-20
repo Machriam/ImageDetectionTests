@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ImageDetectionTests.Client",
   "resources": {
-    "hash": "sha256-WiCE/B745eU8V2Lj9jZInWiY+oga/dDjXY+o9QJrnJA=",
+    "hash": "sha256-IANiSEBu3rAXg03K0Q+rha4L3gpMpAR3eZuVWI/Pvec=",
     "jsModuleNative": {
       "dotnet.native.8.0.0.caocrto39y.js": "sha256-8su0dfqXmrR6nSS80nF/thphOx+y1Myj7Zbp7+5wV3Y="
     },
@@ -17,8 +17,8 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "ImageDetectionTests.Client.wasm": "sha256-JgO44YIEBucxVP6JnhQfURx5voKn9mqNWJmfENGYWs8=",
-      "ImageDetectionTests.Shared.wasm": "sha256-u6bH7UDQMn4nsja0nKiWtALud2L5bdmTMB6oWGTPIG4=",
+      "ImageDetectionTests.Client.wasm": "sha256-k5G5TqNp+XO55lF7VzEvhq1XATS7yDZeIKFiTJq0zWQ=",
+      "ImageDetectionTests.Shared.wasm": "sha256-HNAw7Vk6O4nTmxH4oyhBEL8p7eLKc1hzsMlUTCvAdIk=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-VVjbzhM9R2QTMQfL1fNFwW5kyMgeFLZ/lPhJU/fS86w=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-oON+8l1x3mtzBDjVxN6IiU7i7tJFM1qM/kOKt2Wbmpk=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-5FaflSk4l761sg/eVrAb3FIdwbplaj7pDCyFzPHZ2Cc=",
