@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 
 namespace ImageDetectionTests.Client.Pages
 {
     public partial class Index : IDisposable
     {
         [Inject] private IImageDataHandler ImageDataHandler { get; set; } = default!;
+        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         public int Zoom { get; set; } = 100;
         private string? _image;
         private readonly List<Guid> _images = new();
