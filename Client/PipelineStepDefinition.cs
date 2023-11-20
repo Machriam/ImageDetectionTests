@@ -46,22 +46,12 @@ public static class PipelineStepDefinition
                 }
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
-            /*
             new PipelineStep()
             {
                 Name = "Invert",
-                Action = (src, dest, p) => {
-                    Cv2.Invert(src,dest);
-                }
-            },
-
-            new PipelineStep()
-            {
-                Name = "Log",
-                Action = (src, dest, p) => {
-                    Cv2.Log(src,dest);
-                }
-            },
+                JsName="Invert"
+            }
+            /*
             new PipelineStep()
             {
                 Name = "Fourier Transform",

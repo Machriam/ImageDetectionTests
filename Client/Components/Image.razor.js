@@ -51,6 +51,12 @@ export function GaussianBlur(sourceGuid, destGuid, params) {
         cv.GaussianBlur(src, dest, new cv.Size(0, 0), params[0], params[1]);
     });
 }
+export function Invert(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        cv.bitwise_not(src, dest);
+    });
+}
 
 function InvokeStep(sourceGuid, destGuid, modifyImage) {
     document.getElementById(destGuid).getContext("2d", { willReadFrequently: true });
