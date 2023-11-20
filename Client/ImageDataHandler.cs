@@ -98,9 +98,6 @@ public class ImageDataHandler : IImageDataHandler
     public Task ImageRendered(MatImageData data)
     {
         var (entry, index) = _imageData.WithIndex().First(d => d.Item.Guid == data.Guid);
-        entry.RGBABytes = data.RGBABytes;
-        entry.Height = data.Height;
-        entry.Width = data.Width;
         if (index != 0) entry.PreviousImage = _imageData[index - 1].Guid;
         return Task.CompletedTask;
     }

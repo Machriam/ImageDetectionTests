@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
-using SpawnDev.BlazorJS;
 
 namespace ImageDetectionTests.Client.Pages
 {
@@ -38,7 +37,7 @@ namespace ImageDetectionTests.Client.Pages
             using var memoryStream = new MemoryStream();
             await args.File.OpenReadStream(1024 * 1024 * 1024).CopyToAsync(memoryStream);
             _image = "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
-            await JSRuntime.InvokeVoidAsync("openCvTest", _image);
+            await ImageDataHandler.AddSourceImage(_image);
         }
 
         public void Dispose()

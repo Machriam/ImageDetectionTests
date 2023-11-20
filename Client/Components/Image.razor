@@ -1,11 +1,13 @@
 ﻿@implements IDisposable
 @using OpenCvSharp;
 @using SpawnDev.BlazorJS.JSObjects;
-<canvas @onclick="SelectImage" title="@CurrentData" style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");" @ref=canvasSrcRef></canvas>
+<canvas @onclick="SelectImage" title="@CurrentData"
+        id="@CurrentData"
+        style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");"></canvas>
 
 @code {
-    ElementReference canvasSrcRef;
     [Inject] IImageDataHandler ImageDataHandler { get; set; } = default!;
+    [Inject] IJSRuntime JS { get; set; } = default!;
     [Parameter] public Guid CurrentData { get; set; }
     [Parameter] public int Zoom { get; set; } = 100;
     private bool _selected;
@@ -47,31 +49,17 @@
     }
     public async Task RenderImage(string image)
     {
-        using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
-        using var canvasSrcCtx = canvasSrcEl.Get2DContext();
-        using var src = new Mat();
-        await src.LoadImageURL(image);
-        src.DrawOnCanvas(canvasSrcCtx, true);
-        await InvokePictureRendered(src);
+        await JS.ExecuteModuleFunction("DrawSourceImage", new List<object> { CurrentData, image });
+        await InvokePictureRendered();
     }
     public async Task RenderPipelineImage(MatImageData pipelineAction)
     {
-            using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
-            using var canvasSrcCtx = canvasSrcEl.Get2DContext();
-            using var dest = new Mat();
-            var action = pipelineAction.GetAction(ImageDataHandler);
-            action(dest);
-            dest.DrawOnCanvas(canvasSrcCtx, true);
-            await InvokePictureRendered(dest);
     }
-    public async Task InvokePictureRendered(Mat src)
+    public async Task InvokePictureRendered()
     {
         await ImageDataHandler.ImageRendered(new MatImageData()
             {
                 Guid = CurrentData,
-                Height = src.Height,
-                Width = src.Width,
-                RGBABytes = src.GetRGBABytes()
             });
     }
     public void Dispose()
