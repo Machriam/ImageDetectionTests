@@ -54,7 +54,8 @@
     }
     public async Task RenderPipelineImage(MatImageData pipelineAction)
     {
-        await pipelineAction.Step.Action.Invoke(pipelineAction, CvInterop, pipelineAction.StepParameter.Select(p => p.Value).ToArray());
+        var parameter = pipelineAction.StepParameter.Select(p => p.Value).ToArray();
+        await CvInterop.ExecutePipelineAction(pipelineAction.Step.JsName, pipelineAction, parameter);
     }
     public async Task InvokePictureRendered()
     {

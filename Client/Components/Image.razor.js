@@ -15,3 +15,11 @@ export function Canny(sourceGuid, destGuid, params) {
     src.delete();
     dest.delete();
 }
+export function MedianBlur(sourceGuid, destGuid, params) {
+    const src = cv.imread(sourceGuid);
+    const dest = new cv.Mat();
+    cv.medianBlur(src, dest, params[0]);
+    cv.imshow(destGuid, dest);
+    src.delete();
+    dest.delete();
+}

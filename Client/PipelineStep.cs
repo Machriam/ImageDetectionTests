@@ -1,6 +1,5 @@
 ﻿namespace ImageDetectionTests.Client;
 
-using ImageDetectionTests.Client.Core;
 using System;
 
 public enum ParamType
@@ -16,7 +15,7 @@ public struct PipelineStep
     }
 
     public string Name { get; init; } = "";
-    public Func<MatImageData, IOpenCvInterop, object[], Task> Action { get; init; } = default!;
+    public string JsName { get; init; } = "";
     public Dictionary<int, ParamInfoCV> ParamInfoByIndex { get; init; } = new();
 }
 

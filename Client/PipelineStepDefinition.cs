@@ -21,7 +21,7 @@ public static class PipelineStepDefinition
             new PipelineStep()
             {
                 Name = "Canny",
-                Action = (data, js, p) => js.ExecutePipelineAction("Canny",data,p ),
+                JsName="Canny",
                 ParamInfoByIndex = new[]{
                    new ParamInfoCV(){Name="threshold1",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=100},
                    new ParamInfoCV(){Name="threshold2",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=300},
@@ -29,17 +29,17 @@ public static class PipelineStepDefinition
                 .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
-            /*
             new PipelineStep()
             {
                 Name = "Median Blur",
-                Action = (src, dest, p) => Cv2.MedianBlur(src, dest, (int)p[0]),
+                JsName="MedianBlur",
                 ParamInfoByIndex = new[]{
                    new ParamInfoCV(){Name="ksize",ParamType=ParamType.Integer,MaxValue=101,MinValue=3,DefaultValue=5},
                 }
                 .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x)+(1-(IntConverter(a,x)%2)); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+            /*
             new PipelineStep()
             {
                 Name = "Equalize Grayscale Hist",
