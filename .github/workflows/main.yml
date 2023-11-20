@@ -26,6 +26,7 @@ jobs:
         working-directory: ./Server
         run: |
           uuid=$(uuidgen)
+          echo "$uuid"
           sed -i 's/{version}/$uuid/g' ./Release/wwwroot/index.html
       - name: Add .nojekyll file
         working-directory: ./Server
