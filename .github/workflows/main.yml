@@ -24,10 +24,7 @@ jobs:
         run: sed -i 's/<base href="\/" \/>/<base href="\/ImageDetectionTests\/" \/>/g' ./Release/wwwroot/index.html
       - name: Change version in index.html to not use cached data
         working-directory: ./Server
-        run: |
-          uuid=$(uuidgen)
-          echo "$uuid"
-          sed -i 's/{version}/$uuid/g' ./Release/wwwroot/index.html
+        run: sed -i "s/{version}/$(uuidgen)/g" ./Release/wwwroot/index.html
       - name: Add .nojekyll file
         working-directory: ./Server
         run: touch ./Release/wwwroot/.nojekyll
