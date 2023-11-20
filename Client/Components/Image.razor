@@ -1,7 +1,6 @@
 ﻿@implements IDisposable
 @using ImageDetectionTests.Client.Core
 @using OpenCvSharp;
-@using SpawnDev.BlazorJS.JSObjects;
 <canvas @onclick="SelectImage" title="@Guid"
         id="@Guid"
         style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");"></canvas>
