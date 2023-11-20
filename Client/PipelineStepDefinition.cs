@@ -1,7 +1,6 @@
 ﻿namespace ImageDetectionTests.Client;
 
 using ImageDetectionTests.Client.Extensions;
-using OpenCvSharp;
 using System;
 
 public static class PipelineStepDefinition
@@ -22,7 +21,7 @@ public static class PipelineStepDefinition
             new PipelineStep()
             {
                 Name = "Canny",
-                Action = (src, dest, p) =>  Cv2.Canny(src, dest, (int)p[0], (int)p[1]),
+                Action = (data, js, p) => js.ExecutePipelineAction("Canny",data,p ),
                 ParamInfoByIndex = new[]{
                    new ParamInfoCV(){Name="threshold1",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=100},
                    new ParamInfoCV(){Name="threshold2",ParamType=ParamType.Integer,MaxValue=1000,MinValue=0,DefaultValue=300},
@@ -30,6 +29,7 @@ public static class PipelineStepDefinition
                 .Select(x=>{x.ConvertTextToParam=a=>IntConverter(a,x); return x; })
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+            /*
             new PipelineStep()
             {
                 Name = "Median Blur",
@@ -106,5 +106,6 @@ public static class PipelineStepDefinition
                     new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=2.5d,Name="Type",ParamType=ParamType.Double,},
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+            */
 };
 }

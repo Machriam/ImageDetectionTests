@@ -1,20 +1,21 @@
 ﻿@implements IDisposable
+@using ImageDetectionTests.Client.Core
 @using OpenCvSharp;
 @using SpawnDev.BlazorJS.JSObjects;
-<canvas @onclick="SelectImage" title="@CurrentData"
-        id="@CurrentData"
+<canvas @onclick="SelectImage" title="@Guid"
+        id="@Guid"
         style="zoom: @(Zoom)%; border:@(_selected? "3px solid blue":"1px solid grey");"></canvas>
 
 @code {
     [Inject] IImageDataHandler ImageDataHandler { get; set; } = default!;
-    [Inject] IJSRuntime JS { get; set; } = default!;
-    [Parameter] public Guid CurrentData { get; set; }
+    [Inject] IOpenCvInterop CvInterop { get; set; } = default!;
+    [Parameter] public Guid Guid { get; set; }
     [Parameter] public int Zoom { get; set; } = 100;
     private bool _selected;
 
     public void SelectImage()
     {
-        ImageDataHandler.SelectImage(CurrentData);
+        ImageDataHandler.SelectImage(Guid);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -22,44 +23,45 @@
         ImageDataHandler.ImageSelected += OnImageSelected;
         ImageDataHandler.ReRenderImage += OnReRenderImage;
         ImageDataHandler.ImageRemoved += OnImageRemoved;
-        var data = ImageDataHandler.GetRenderData(CurrentData);
+        var data = ImageDataHandler.GetRenderData(Guid);
         if (data.PreviousImage == null) await RenderImage(data.OriginalImage);
         else await RenderPipelineImage(data);
         await base.OnAfterRenderAsync(firstRender);
     }
     public async Task OnReRenderImage(Guid guid)
     {
-        if (CurrentData != guid) return;
-        var data = ImageDataHandler.GetRenderData(CurrentData);
+        if (Guid != guid) return;
+        var data = ImageDataHandler.GetRenderData(Guid);
         await RenderPipelineImage(data);
         StateHasChanged();
     }
     public Task OnImageRemoved(Guid guid)
     {
-        if (CurrentData != guid) return Task.CompletedTask;
+        if (Guid != guid) return Task.CompletedTask;
         Dispose();
         return Task.CompletedTask;
     }
     public Task OnImageSelected(Guid guid)
     {
-        if (CurrentData != guid) _selected = false;
+        if (Guid != guid) _selected = false;
         else _selected = true;
         StateHasChanged();
         return Task.CompletedTask;
     }
     public async Task RenderImage(string image)
     {
-        await JS.ExecuteModuleFunction("DrawSourceImage", new List<object> { CurrentData, image });
+        await CvInterop.DrawSourceImage(Guid, image);
         await InvokePictureRendered();
     }
     public async Task RenderPipelineImage(MatImageData pipelineAction)
     {
+        await pipelineAction.Step.Action.Invoke(pipelineAction, CvInterop, pipelineAction.StepParameter.Select(p => p.Value).ToArray());
     }
     public async Task InvokePictureRendered()
     {
         await ImageDataHandler.ImageRendered(new MatImageData()
             {
-                Guid = CurrentData,
+                Guid = Guid,
             });
     }
     public void Dispose()
