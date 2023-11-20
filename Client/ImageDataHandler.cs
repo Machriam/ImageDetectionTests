@@ -30,8 +30,6 @@ public interface IImageDataHandler
 
     Task SelectImage(Guid guid);
 
-    Task UpdateImageAt();
-
     Task Clear();
 
     Task InvokeSelectedImageChanged();
@@ -156,10 +154,5 @@ public class ImageDataHandler : IImageDataHandler
         _imageData.Clear();
         _selectedImage = null;
         await InvokeImageChanged();
-    }
-
-    public Task UpdateImageAt()
-    {
-        return Task.CompletedTask;
     }
 }
