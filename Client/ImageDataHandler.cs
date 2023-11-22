@@ -66,11 +66,11 @@ public class ImageDataHandler : IImageDataHandler
 
     public async Task InvokeSelectedImageChanged()
     {
-        if (_selectedImage == null) return;
+        if (_selectedImage == null || ReRenderImage == null) return;
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
         for (var i = index; i < _imageData.Count; i++)
         {
-            await (ReRenderImage?.Invoke(_imageData[i].Guid) ?? Task.CompletedTask);
+            await ReRenderImage.Invoke(_imageData[i].Guid);
         }
     }
 
@@ -85,7 +85,8 @@ public class ImageDataHandler : IImageDataHandler
 
     public async Task InvokeImageChanged()
     {
-        await (ImageChanged?.Invoke(_imageData.ConvertAll(d => d.Guid)) ?? Task.CompletedTask);
+        if (ImageChanged == null) return;
+        await ImageChanged.Invoke(_imageData.ConvertAll(d => d.Guid));
     }
 
     public MatImageData GetRenderData(Guid guid)
@@ -123,7 +124,8 @@ public class ImageDataHandler : IImageDataHandler
         if (_imageData.First(d => !string.IsNullOrEmpty(d.OriginalImage)).Guid == guid) _selectedImage = null;
         await (ImageSelected?.Invoke(_selectedImage ?? Guid.Empty) ?? Task.CompletedTask);
         var imageParameter = _imageData.Find(d => d.Guid == _selectedImage);
-        await (ImageParameterChanged?.Invoke(imageParameter?.Step, imageParameter?.StepParameter) ?? Task.CompletedTask);
+        if (ImageParameterChanged == null) return;
+        await ImageParameterChanged.Invoke(imageParameter?.Step, imageParameter?.StepParameter);
     }
 
     public async Task RemoveSelectedImage()
@@ -134,7 +136,7 @@ public class ImageDataHandler : IImageDataHandler
 
         if (index < _imageData.Count - 1) _imageData[index + 1].PreviousImage = _imageData[index - 1].Guid;
         _imageData.RemoveAt(index);
-        await (ImageRemoved?.Invoke(image.Guid) ?? Task.CompletedTask);
+        if (ImageRemoved != null) await ImageRemoved.Invoke(image.Guid);
         await InvokeImageChanged();
         _selectedImage = null;
         await UpdateFromIndex(index);
@@ -142,10 +144,11 @@ public class ImageDataHandler : IImageDataHandler
 
     public async Task UpdateFromIndex(int index)
     {
+        if (ReRenderImage == null) return;
         foreach (var image in _imageData.WithIndex()
             .Where(d => d.Index >= index && d.Index > 0))
         {
-            await (ReRenderImage?.Invoke(image.Item.Guid) ?? Task.CompletedTask);
+            await ReRenderImage.Invoke(image.Item.Guid);
         }
     }
 
