@@ -45,7 +45,7 @@ public static partial class JsRuntimeExtensions
     /// <param name="jsRuntime"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static ValueTask<IJSObjectReference> ImportJsFile(this IJSRuntime jsRuntime, [CallerFilePath] string path = "")
+    public async static ValueTask<IJSObjectReference> ImportJsFile(this IJSRuntime jsRuntime, [CallerFilePath] string path = "")
     {
         var regex = FilePathSplitRegex();
         var split = regex.Split(path);
@@ -55,7 +55,7 @@ public static partial class JsRuntimeExtensions
 #if DEBUG
         buildId = Guid.NewGuid().ToString();
 #endif
-        return jsRuntime.InvokeAsync<IJSObjectReference>("import", modulePath + "?version=" + buildId);
+        return await jsRuntime.InvokeAsync<IJSObjectReference>("import", modulePath + "?version=" + buildId);
     }
 
     public static ValueTask<bool> Confirm(this IJSRuntime jsRuntime, string message)
