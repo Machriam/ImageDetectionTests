@@ -50,15 +50,13 @@ public static class PipelineStepDefinition
             {
                 Name = "Invert",
                 JsName="Invert"
-            }
-            /*
+            },
             new PipelineStep()
             {
                 Name = "Fourier Transform",
-                Action = (src, dest, p) => {
-                    Cv2.Dft(src,dest);
-                }
+                JsName="FourierTransform",
             },
+            /*
             new PipelineStep()
             {
                 Name = "Power-Law",
