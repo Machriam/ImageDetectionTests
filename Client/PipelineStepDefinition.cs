@@ -56,18 +56,17 @@ public static class PipelineStepDefinition
                 Name = "Fourier Transform",
                 JsName="FourierTransform",
             },
-            /*
             new PipelineStep()
             {
-                Name = "Power-Law",
-                Action = (src, dest, p) => {
-                    Cv2.Pow(src,(double)p[0],dest);
-                },
+                Name = "Power-Law (Gamma)",
+                JsName="PowerLaw",
                 ParamInfoByIndex = new[]
                 {
-                    new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=2.5d,Name="Power",ParamType=ParamType.Double}
+                    new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=1d,Step=0.1f,Name="Alpha",ParamType=ParamType.Double},
+                    new ParamInfoCV(){MinValue=-255,MaxValue=255,DefaultValue=0d,Step=1f,Name="Beta",ParamType=ParamType.Double}
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+            /*
             new PipelineStep()
             {
                 Name = "Threshold",

@@ -27,7 +27,7 @@ public static class ParamInfoCVExtensions
         switch (info.ParamType)
         {
             case ParamType.Integer:
-                success = int.TryParse(value, out var intValue);
+                success = int.TryParse(value.Replace(",", "."), out var intValue);
                 if (success)
                 {
                     intValue = Math.Max(Math.Min(intValue, (int)info.MaxValue), (int)info.MinValue);
@@ -36,7 +36,7 @@ public static class ParamInfoCVExtensions
                 return (int)info.DefaultValue;
 
             case ParamType.Double:
-                success = double.TryParse(value, out var doubleValue);
+                success = double.TryParse(value.Replace(",", "."), out var doubleValue);
                 if (success)
                 {
                     doubleValue = Math.Max(Math.Min(doubleValue, info.MaxValue), info.MinValue);

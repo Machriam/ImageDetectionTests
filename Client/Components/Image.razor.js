@@ -57,6 +57,11 @@ export function Invert(sourceGuid, destGuid, params) {
         cv.bitwise_not(src, dest);
     });
 }
+export function PowerLaw(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.convertScaleAbs(src, dest, params[0], params[1]);
+    });
+}
 export function FourierTransform(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
         cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
