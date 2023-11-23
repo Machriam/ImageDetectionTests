@@ -62,6 +62,12 @@ export function PowerLaw(sourceGuid, destGuid, params) {
         cv.convertScaleAbs(src, dest, params[0], params[1]);
     });
 }
+export function Threshold(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.threshold(src, dest, params[0], params[1], cv.THRESH_BINARY);
+    });
+}
+
 export function FourierTransform(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
         cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
