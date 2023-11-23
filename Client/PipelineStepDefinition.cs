@@ -66,20 +66,15 @@ public static class PipelineStepDefinition
                     new ParamInfoCV(){MinValue=-255,MaxValue=255,DefaultValue=0d,Step=1f,Name="Beta",ParamType=ParamType.Double}
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
-            /*
             new PipelineStep()
             {
                 Name = "Threshold",
-                Action = (src, dest, p) => {
-                    Cv2.Threshold(src,dest,(double)p[0],(double)p[1],(ThresholdTypes)p[2]);
-                },
+                JsName="Threshold",
                 ParamInfoByIndex = new[]
                 {
-                    new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=2.5d,Name="Threshold",ParamType=ParamType.Double,},
-                    new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=2.5d,Name="MaxValue",ParamType=ParamType.Double,},
-                    new ParamInfoCV(){MinValue=0,MaxValue=10,DefaultValue=2.5d,Name="Type",ParamType=ParamType.Double,},
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=50d,Name="Threshold",ParamType=ParamType.Double,},
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=50d,Name="MaxValue",ParamType=ParamType.Double,},
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
-            */
 };
 }
