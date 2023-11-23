@@ -70,8 +70,11 @@ public class ImageDataHandler : IImageDataHandler
         var (image, index) = _imageData.WithIndex().First(d => d.Item.Guid == _selectedImage);
         for (var i = index; i < _imageData.Count; i++)
         {
-            // To Fix: Only awaits the first succeeding call, but not the one taking longest, which is actually rendering something
-            await ReRenderImage.Invoke(_imageData[i].Guid);
+            var delegateList = ReRenderImage.GetInvocationList()
+                .Select(d => (Task?)d.DynamicInvoke(_imageData[i].Guid))
+                .Where(d => d != null)
+                .Cast<Task>();
+            await Task.WhenAll(delegateList);
         }
     }
 
@@ -148,8 +151,11 @@ public class ImageDataHandler : IImageDataHandler
         if (ReRenderImage == null) return;
         foreach (var image in _imageData.WithIndex().Where(d => d.Index >= index && d.Index > 0))
         {
-            // To Fix: Only awaits the first succeeding call, but not the one taking longest, which is actually rendering something
-            await ReRenderImage.Invoke(image.Item.Guid);
+            var delegateList = ReRenderImage.GetInvocationList()
+                .Select(d => (Task?)d.DynamicInvoke(image.Item.Guid))
+                .Where(d => d != null)
+                .Cast<Task>();
+            await Task.WhenAll(delegateList);
         }
     }
 
