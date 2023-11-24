@@ -75,7 +75,7 @@ public partial class PipelineStepSelection : IDisposable
         _selectedStep = PipelineStepDefinition.PossibleSteps.First(ps => ps.Name == _selectedStepName);
         foreach (var item in _selectedStep.Value.ParamInfoByIndex.OrderBy(t => t.Key))
             _parameters.Add(new() { RawInput = item.Value.DefaultValue.ToString() ?? "", Value = item.Value.DefaultValue });
-        if (_selectedStep == null || _parameters.Count == 0) return;
+        if (_selectedStep == null) return;
         await ImageDataHandler.SelectedStepChanged(_selectedStep.Value, _parameters);
     }
 
