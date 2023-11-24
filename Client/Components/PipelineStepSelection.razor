@@ -22,6 +22,14 @@
                            class="form-control" />
                 </div>
             }
+            else if (param.Value.ParamType == ParamType.Kernel)
+            {
+                <div class="col-md-3">
+                    <textarea @bind="_parameters[param.Key].RawInput"
+                              rows="7"
+                              @bind:after="()=>ParameterChanged(param.Key,param.Value)"></textarea>
+                </div>
+            }
         }
     }
     <button style="height:30%" @onclick="@AddFilter" class="col-md-2 btn btn-primary m-3">Add Step</button>

@@ -68,6 +68,15 @@ public static class PipelineStepDefinition
             },
             new PipelineStep()
             {
+                Name="Kernel Spatial Filtering",
+                JsName="KernelFiltering",
+                ParamInfoByIndex = new[]
+                {
+                    new ParamInfoCV(){ParamType=ParamType.Kernel,DefaultValue=new KernelInfo().Kernel, Kernels=[new KernelInfo()],Name="Kernel Selection" }
+                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
+            new PipelineStep()
+            {
                 Name = "Threshold",
                 JsName="Threshold",
                 ParamInfoByIndex = new[]

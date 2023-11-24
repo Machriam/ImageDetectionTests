@@ -19,6 +19,14 @@ export function MedianBlur(sourceGuid, destGuid, params) {
         cv.medianBlur(src, dest, params[0]);
     });
 }
+export function KernelFiltering(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, params[0]);
+        let anchor = new cv.Point(-1, -1);
+        cv.filter2D(src, dest, cv.CV_8U, kernel, anchor, 0, cv.BORDER_DEFAULT);
+        kernel.delete();
+    });
+}
 
 export function EqualizeGrayHist(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {

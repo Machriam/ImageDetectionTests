@@ -1,11 +1,13 @@
 ﻿namespace ImageDetectionTests.Client;
 
+using ImageDetectionTests.Client.Extensions;
 using System;
 
 public enum ParamType
 {
     Integer,
-    Double
+    Double,
+    Kernel
 }
 
 public struct PipelineStep
@@ -43,9 +45,26 @@ public static class ParamInfoCVExtensions
                     return info.Transform(doubleValue);
                 }
                 return (double)info.DefaultValue;
+
+            case ParamType.Kernel:
+                success = false;
+                var result = value.Split("\n").Select(x => x.Split(",")
+                                  .Select(y =>
+                                  {
+                                      success = double.TryParse(y, out var matrixValue);
+                                      return matrixValue;
+                                  }));
+                if (!success) return info.DefaultValue;
+                return result;
         }
         return value;
     }
+}
+
+public class KernelInfo
+{
+    public string Name { get; set; } = "Identity";
+    public string Kernel { get; set; } = "0,0,0\n0,1,0\n0,0,0";
 }
 
 public struct ParamInfoCV
@@ -62,4 +81,5 @@ public struct ParamInfoCV
     public object DefaultValue { get; init; } = new();
     public float Step { get; set; } = 1f;
     public object[] Values { get; init; } = Array.Empty<object>();
+    public List<KernelInfo> Kernels { get; set; } = new();
 }
