@@ -7,7 +7,7 @@
     <div class="col-md-3">
         <label>Zoom</label>
         <input type="range" class="form-range" min="10" max="200" step="1" value="@Zoom" @onchange="ZoomChanged" />
-        <InputFile class="col-md-12 form-control" OnChange="@(OnFileChanged)"></InputFile>
+        <InputFile accept=".png,.jpg,.jpeg" class="col-md-12 form-control" OnChange="@(OnFileChanged)"></InputFile>
     </div>
     @if (_image != null)
     {
