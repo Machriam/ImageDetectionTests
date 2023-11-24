@@ -1,12 +1,15 @@
 ﻿@using System.Globalization
 <div style="height:15vh;overflow-y:scroll" class="row @(string.Join(' ',Attributes.Where(a=>a.Key=="class").Select(a=>a.Value)))">
-    <select @bind="_selectedStepName" @bind:after="SelectedStepChanged" style="height:30%" class="form-control col-md-2">
-        <option></option>
-        @foreach (var step in PipelineStepDefinition.PossibleSteps)
-        {
-            <option selected="@(step.Name==_selectedStep?.Name)" value="@step.Name">@step.Name</option>
-        }
-    </select>
+    <div class="col-md-3">
+        <label class="col-form-label">Select Step</label>
+        <select @bind="_selectedStepName" @bind:after="SelectedStepChanged" class="form-control">
+            <option></option>
+            @foreach (var step in PipelineStepDefinition.PossibleSteps)
+            {
+                <option selected="@(step.Name==_selectedStep?.Name)" value="@step.Name">@step.Name</option>
+            }
+        </select>
+    </div>
     @if (_selectedStep != null)
     {
         @foreach (var param in _selectedStep.Value.ParamInfoByIndex)
