@@ -4,6 +4,18 @@ using System;
 
 public static class EnumerableExtensions
 {
+    public static List<List<double>> ConvertToMatrix(this string matrixString)
+    {
+        Console.WriteLine("Input: " + matrixString);
+        var result = new List<List<double>>();
+        foreach (var line in matrixString.Split("\n"))
+        {
+            result.Add(line.Split(",").Select(l => double.TryParse(l, out var value) ? value : 0d).ToList());
+        }
+        Console.WriteLine("Result: " + result.AsJson());
+        return result;
+    }
+
     public static T? ByIndex<T>(this IList<T> source, int index) where T : class
     {
         if (source.Count == 0) return null;

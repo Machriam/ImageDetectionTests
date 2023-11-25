@@ -1,3 +1,4 @@
+using ImageDetectionTests.Client.Extensions;
 using Microsoft.AspNetCore.Components;
 using OpenCvSharp;
 
@@ -74,7 +75,11 @@ public partial class PipelineStepSelection : IDisposable
         if (string.IsNullOrEmpty(_selectedStepName)) return;
         _selectedStep = PipelineStepDefinition.PossibleSteps.First(ps => ps.Name == _selectedStepName);
         foreach (var item in _selectedStep.Value.ParamInfoByIndex.OrderBy(t => t.Key))
-            _parameters.Add(new() { RawInput = item.Value.DefaultValue.ToString() ?? "", Value = item.Value.DefaultValue });
+            _parameters.Add(new()
+            {
+                RawInput = item.Value.DefaultValue.ToString() ?? "",
+                Value = item.Value.ConvertTextToParam((item.Value.DefaultValue.ToString() ?? ""))
+            });
         if (_selectedStep == null) return;
         await ImageDataHandler.SelectedStepChanged(_selectedStep.Value, _parameters);
     }

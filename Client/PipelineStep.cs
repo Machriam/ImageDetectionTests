@@ -47,15 +47,7 @@ public static class ParamInfoCVExtensions
                 return (double)info.DefaultValue;
 
             case ParamType.Kernel:
-                success = false;
-                var result = value.Split("\n").Select(x => x.Split(",")
-                                  .Select(y =>
-                                  {
-                                      success = double.TryParse(y, out var matrixValue);
-                                      return matrixValue;
-                                  }));
-                if (!success) return info.DefaultValue;
-                return result;
+                return value.ConvertToMatrix();
         }
         return value;
     }
