@@ -47,7 +47,7 @@ public static class ParamInfoCVExtensions
                 return (double)info.DefaultValue;
 
             case ParamType.Kernel:
-                return value.ConvertToMatrix();
+                return value.ConvertToMatrix().NormalizeKernel();
         }
         return value;
     }

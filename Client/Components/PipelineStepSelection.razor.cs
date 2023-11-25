@@ -1,4 +1,3 @@
-using ImageDetectionTests.Client.Extensions;
 using Microsoft.AspNetCore.Components;
 using OpenCvSharp;
 
@@ -62,6 +61,7 @@ public partial class PipelineStepSelection : IDisposable
 
     public async Task ParameterChanged(int position, ParamInfoCV info)
     {
+        if (info.ParamType == ParamType.Kernel) _parameters[position].RawInput = _parameters[position].RawInput.Replace("\t", ",").Trim();
         var text = _parameters[position].RawInput;
         _parameters[position].Value = info.ConvertTextToParam(text);
         ImageDataHandler.UpdateImageParameter(_parameters.ConvertAll(p => p.Clone()));
@@ -78,7 +78,7 @@ public partial class PipelineStepSelection : IDisposable
             _parameters.Add(new()
             {
                 RawInput = item.Value.DefaultValue.ToString() ?? "",
-                Value = item.Value.ConvertTextToParam((item.Value.DefaultValue.ToString() ?? ""))
+                Value = item.Value.ConvertTextToParam(item.Value.DefaultValue.ToString() ?? "")
             });
         if (_selectedStep == null) return;
         await ImageDataHandler.SelectedStepChanged(_selectedStep.Value, _parameters);

@@ -4,15 +4,19 @@ using System;
 
 public static class EnumerableExtensions
 {
+    public static List<List<double>> NormalizeKernel(this List<List<double>> matrix)
+    {
+        var inverseSum = 1f / matrix.SelectMany(m => m).Sum();
+        return matrix.ConvertAll(m => m.ConvertAll(x => x * inverseSum));
+    }
+
     public static List<List<double>> ConvertToMatrix(this string matrixString)
     {
-        Console.WriteLine("Input: " + matrixString);
         var result = new List<List<double>>();
         foreach (var line in matrixString.Split("\n"))
         {
             result.Add(line.Split(",").Select(l => double.TryParse(l, out var value) ? value : 0d).ToList());
         }
-        Console.WriteLine("Result: " + result.AsJson());
         return result;
     }
 
