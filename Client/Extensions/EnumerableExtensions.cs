@@ -1,12 +1,15 @@
 ﻿namespace ImageDetectionTests.Client.Extensions;
 
 using System;
+using System.Globalization;
 
 public static class EnumerableExtensions
 {
     public static List<List<double>> NormalizeKernel(this List<List<double>> matrix)
     {
-        var inverseSum = 1f / matrix.SelectMany(m => m).Sum();
+        var sum = matrix.SelectMany(m => m).Sum(x => Math.Abs(x));
+        if (sum == 0d) return matrix;
+        var inverseSum = 1f / sum;
         return matrix.ConvertAll(m => m.ConvertAll(x => x * inverseSum));
     }
 
@@ -15,7 +18,7 @@ public static class EnumerableExtensions
         var result = new List<List<double>>();
         foreach (var line in matrixString.Split("\n"))
         {
-            result.Add(line.Split(",").Select(l => double.TryParse(l, out var value) ? value : 0d).ToList());
+            result.Add(line.Split(",").Select(l => double.TryParse(l, CultureInfo.InvariantCulture, out var value) ? value : 0d).ToList());
         }
         return result;
     }
