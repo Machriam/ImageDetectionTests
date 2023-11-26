@@ -21,7 +21,11 @@ export function MedianBlur(sourceGuid, destGuid, params) {
 }
 export function KernelFiltering(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
-        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, params[0].flatMap(p => p));
+        const matrix = params[0].flatMap(p => p);
+        if (matrix.reduce((a, b) => a + b, 0) == 0) {
+            cv.cvtColor(src, src, cv.COLOR_RGB2GRAY);
+        }
+        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, matrix);
         let anchor = new cv.Point(-1, -1);
         cv.filter2D(src, dest, cv.CV_8U, kernel, anchor, 0, cv.BORDER_DEFAULT);
         kernel.delete();
