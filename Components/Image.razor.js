@@ -19,6 +19,22 @@ export function MedianBlur(sourceGuid, destGuid, params) {
         cv.medianBlur(src, dest, params[0]);
     });
 }
+export function KernelFiltering(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        let matrix = params[0].flatMap(p => p);
+        const useGrayScale = params[1];
+        const normalizeMatrix = params[2];
+        if (useGrayScale) cv.cvtColor(src, src, cv.COLOR_RGB2GRAY);
+        if (normalizeMatrix) {
+            const sum = matrix.reduce((a, b) => a + b, 0);
+            if (sum != 0) matrix = matrix.map(x => x / sum);
+        }
+        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, matrix);
+        let anchor = new cv.Point(-1, -1);
+        cv.filter2D(src, dest, cv.CV_8U, kernel, anchor, 0, cv.BORDER_DEFAULT);
+        kernel.delete();
+    });
+}
 
 export function EqualizeGrayHist(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
@@ -65,6 +81,20 @@ export function PowerLaw(sourceGuid, destGuid, params) {
 export function Threshold(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
         cv.threshold(src, dest, params[0], params[1], cv.THRESH_BINARY);
+    });
+}
+export function AdaptiveThreshold_Mean(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        const thresholdType = params[3] ? cv.THRESH_BINARY_INV : cv.THRESH_BINARY;
+        cv.adaptiveThreshold(src, dest, params[0], cv.ADAPTIVE_THRESH_MEAN_C, thresholdType, params[1], params[2]);
+    });
+}
+export function AdaptiveThreshold_Gaussian(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        const thresholdType = params[3] ? cv.THRESH_BINARY_INV : cv.THRESH_BINARY;
+        cv.adaptiveThreshold(src, dest, params[0], cv.ADAPTIVE_THRESH_GAUSSIAN_C, thresholdType, params[1], params[2]);
     });
 }
 
