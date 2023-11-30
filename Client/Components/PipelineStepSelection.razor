@@ -28,9 +28,22 @@
             else if (param.Value.ParamType == ParamType.Kernel)
             {
                 <div class="col-md-3">
+                    <label class="col-form-label">@param.Value.Name (Sum: @(KernelSum(param.Key)))</label>
                     <textarea @bind="_parameters[param.Key].RawInput"
+                              style="width:100%"
                               rows="7"
                               @bind:after="()=>ParameterChanged(param.Key,param.Value)"></textarea>
+                </div>
+            }
+            else if (param.Value.ParamType == ParamType.Boolean)
+            {
+                <div class="col-md-1">
+                    <label class="col-form-label">@param.Value.Name</label>
+                    <input @bind-value="_parameters[param.Key].BoolInput"
+                           @bind-value:after="()=>ParameterChanged(param.Key,param.Value)"
+                           style="transform:scale(2);margin-left:35%"
+                           type="checkbox"
+                           class="form-check" />
                 </div>
             }
         }

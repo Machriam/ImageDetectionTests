@@ -11,6 +11,7 @@ public class StepParameter
     }
 
     public string RawInput { get; set; } = "";
+    public bool BoolInput { get; set; }
     public object Value { get; set; } = new();
 }
 
@@ -62,10 +63,22 @@ public partial class PipelineStepSelection : IDisposable
     public async Task ParameterChanged(int position, ParamInfoCV info)
     {
         if (info.ParamType == ParamType.Kernel) _parameters[position].RawInput = _parameters[position].RawInput.Replace("\t", ",").Trim();
-        var text = _parameters[position].RawInput;
-        _parameters[position].Value = info.ConvertTextToParam(text);
+        if (info.ParamType == ParamType.Boolean)
+        {
+            _parameters[position].Value = _parameters[position].BoolInput;
+        }
+        else
+        {
+            var text = _parameters[position].RawInput;
+            _parameters[position].Value = info.ConvertTextToParam(text);
+        }
         ImageDataHandler.UpdateImageParameter(_parameters.ConvertAll(p => p.Clone()));
         await ImageDataHandler.InvokeSelectedImageChanged();
+    }
+
+    public double KernelSum(int position)
+    {
+        return ((List<List<double>>)_parameters[position].Value).SelectMany(x => x).Sum();
     }
 
     public async Task SelectedStepChanged()
@@ -78,6 +91,7 @@ public partial class PipelineStepSelection : IDisposable
             _parameters.Add(new()
             {
                 RawInput = item.Value.DefaultValue.ToString() ?? "",
+                BoolInput = item.Value.ParamType == ParamType.Boolean && (bool)item.Value.DefaultValue,
                 Value = item.Value.ConvertTextToParam(item.Value.DefaultValue.ToString() ?? "")
             });
         if (_selectedStep == null) return;

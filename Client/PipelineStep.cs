@@ -7,7 +7,8 @@ public enum ParamType
 {
     Integer,
     Double,
-    Kernel
+    Kernel,
+    Boolean
 }
 
 public struct PipelineStep
@@ -47,7 +48,10 @@ public static class ParamInfoCVExtensions
                 return (double)info.DefaultValue;
 
             case ParamType.Kernel:
-                return value.ConvertToMatrix().NormalizeKernel();
+                return value.ConvertToMatrix();
+
+            case ParamType.Boolean:
+                return bool.Parse(value);
         }
         return value;
     }

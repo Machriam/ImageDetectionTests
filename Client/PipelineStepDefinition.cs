@@ -72,7 +72,9 @@ public static class PipelineStepDefinition
                 JsName="KernelFiltering",
                 ParamInfoByIndex = new[]
                 {
-                    new ParamInfoCV(){ParamType=ParamType.Kernel,DefaultValue=new KernelInfo().Kernel, Kernels=[new KernelInfo()],Name="Kernel Selection" }
+                    new ParamInfoCV(){ParamType=ParamType.Kernel,DefaultValue=new KernelInfo().Kernel, Kernels=[new KernelInfo()],Name="Kernel Selection" },
+                    new ParamInfoCV(){ParamType=ParamType.Boolean,DefaultValue=false,Name="Grayscale" },
+                    new ParamInfoCV(){ParamType=ParamType.Boolean,DefaultValue=true,Name="Normalize" },
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
             new PipelineStep()

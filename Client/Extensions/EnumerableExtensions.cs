@@ -5,14 +5,6 @@ using System.Globalization;
 
 public static class EnumerableExtensions
 {
-    public static List<List<double>> NormalizeKernel(this List<List<double>> matrix)
-    {
-        var sum = matrix.SelectMany(m => m).Sum(x => x);
-        if (sum == 0d) return matrix;
-        var inverseSum = 1f / sum;
-        return matrix.ConvertAll(m => m.ConvertAll(x => x * inverseSum));
-    }
-
     public static List<List<double>> ConvertToMatrix(this string matrixString)
     {
         var result = new List<List<double>>();
