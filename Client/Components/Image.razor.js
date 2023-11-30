@@ -83,6 +83,20 @@ export function Threshold(sourceGuid, destGuid, params) {
         cv.threshold(src, dest, params[0], params[1], cv.THRESH_BINARY);
     });
 }
+export function AdaptiveThreshold_Mean(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        const thresholdType = params[3] ? cv.THRESH_BINARY_INV : cv.THRESH_BINARY;
+        cv.adaptiveThreshold(src, dest, params[0], cv.ADAPTIVE_THRESH_MEAN_C, thresholdType, params[1], params[2]);
+    });
+}
+export function AdaptiveThreshold_Gaussian(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+        const thresholdType = params[3] ? cv.THRESH_BINARY_INV : cv.THRESH_BINARY;
+        cv.adaptiveThreshold(src, dest, params[0], cv.ADAPTIVE_THRESH_GAUSSIAN_C, thresholdType, params[1], params[2]);
+    });
+}
 
 export function FourierTransform(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {

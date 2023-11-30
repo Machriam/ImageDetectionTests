@@ -4,6 +4,11 @@ using ImageDetectionTests.Client.Extensions;
 
 public static class PipelineStepDefinition
 {
+    private static int OddTransform(int x)
+    {
+        return (int)x + (1 - ((int)x % 2));
+    }
+
     public static readonly List<PipelineStep> PossibleSteps = new()
         {
             new PipelineStep()
@@ -21,7 +26,8 @@ public static class PipelineStepDefinition
                 Name = "Median Blur",
                 JsName="MedianBlur",
                 ParamInfoByIndex = new[]{
-                   new ParamInfoCV(){Name="ksize",ParamType=ParamType.Integer,MaxValue=101,MinValue=3,DefaultValue=5,Transform=x=>(int)x+(1-((int)x%2))},
+                   new ParamInfoCV(){Name="ksize",ParamType=ParamType.Integer,MaxValue=101,MinValue=3,DefaultValue=5,
+                       Transform=x=>OddTransform((int)x)},
                 }
                 .WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
@@ -85,6 +91,30 @@ public static class PipelineStepDefinition
                 {
                     new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=50d,Name="Threshold",ParamType=ParamType.Double,},
                     new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=50d,Name="MaxValue",ParamType=ParamType.Double,},
+                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
+                        new PipelineStep()
+            {
+                Name = "Threshold Gauss",
+                JsName="AdaptiveThreshold_Gaussian",
+                ParamInfoByIndex = new[]
+                {
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=255,Name="Max Value",ParamType=ParamType.Integer,},
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=3,Name="Block Size",ParamType=ParamType.Integer,Transform=x=>OddTransform((int)x)},
+                    new ParamInfoCV(){MinValue=-10,MaxValue=10,Step=0.1f,DefaultValue=0,Name="Constant",ParamType=ParamType.Double,},
+                    new ParamInfoCV(){DefaultValue=false,Name="Inverted",ParamType=ParamType.Boolean,},
+                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
+                                                new PipelineStep()
+            {
+                Name = "Threshold Mean",
+                JsName="AdaptiveThreshold_Mean",
+                ParamInfoByIndex = new[]
+                {
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=255,Name="Max Value",ParamType=ParamType.Integer,},
+                    new ParamInfoCV(){MinValue=0,MaxValue=255,DefaultValue=3,Name="Block Size",ParamType=ParamType.Integer,Transform=x=>OddTransform((int)x)},
+                    new ParamInfoCV(){MinValue=-10,MaxValue=10,Step=0.1f,DefaultValue=0,Name="Constant",ParamType=ParamType.Double,},
+                    new ParamInfoCV(){DefaultValue=false,Name="Inverted",ParamType=ParamType.Boolean,},
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
 };
