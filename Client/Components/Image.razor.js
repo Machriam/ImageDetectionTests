@@ -19,6 +19,27 @@ export function MedianBlur(sourceGuid, destGuid, params) {
         cv.medianBlur(src, dest, params[0]);
     });
 }
+
+export function Erode(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        const matrix = params[0].flatMap(p => p);
+        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, matrix);
+        let anchor = new cv.Point(-1, -1);
+        cv.erode(src, dest, kernel, anchor, params[1], cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
+        kernel.delete();
+    });
+}
+
+export function Dilate(sourceGuid, destGuid, params) {
+    InvokeStep(sourceGuid, destGuid, (src, dest) => {
+        const matrix = params[0].flatMap(p => p);
+        const kernel = cv.matFromArray(params[0].length, params[0].length, cv.CV_32FC1, matrix);
+        let anchor = new cv.Point(-1, -1);
+        cv.dilate(src, dest, kernel, anchor, params[1], cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
+        kernel.delete();
+    });
+}
+
 export function KernelFiltering(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
         let matrix = params[0].flatMap(p => p);

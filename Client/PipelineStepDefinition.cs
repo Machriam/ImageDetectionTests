@@ -83,6 +83,26 @@ public static class PipelineStepDefinition
                     new ParamInfoCV(){ParamType=ParamType.Boolean,DefaultValue=true,Name="Normalize" },
                 }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
             },
+                        new PipelineStep()
+            {
+                Name="Erode",
+                JsName="Erode",
+                ParamInfoByIndex = new[]
+                {
+                    new ParamInfoCV(){ParamType=ParamType.Kernel,DefaultValue="1,1,1\n1,1,1\n1,1,1", Kernels=[new KernelInfo()],Name="Kernel Selection" },
+                    new ParamInfoCV(){ParamType=ParamType.Integer,MinValue=1,MaxValue=10000,DefaultValue=1,Name="Iterations" },
+                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
+                                                new PipelineStep()
+            {
+                Name="Dilate",
+                JsName="Dilate",
+                ParamInfoByIndex = new[]
+                {
+                    new ParamInfoCV(){ParamType=ParamType.Kernel,DefaultValue="1,1,1\n1,1,1\n1,1,1", Kernels=[new KernelInfo()],Name="Kernel Selection" },
+                    new ParamInfoCV(){ParamType=ParamType.Integer,MinValue=1,MaxValue=10000,DefaultValue=1,Name="Iterations" },
+                }.WithIndex().ToDictionary(x=>x.Index,x=>x.Item)
+            },
             new PipelineStep()
             {
                 Name = "Threshold",
