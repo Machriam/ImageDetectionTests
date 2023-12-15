@@ -56,6 +56,26 @@ export function KernelFiltering(sourceGuid, destGuid, params) {
         kernel.delete();
     });
 }
+export function FindContours(sourceGuid, destGuid, params) {
+    document.getElementById(destGuid).getContext("2d", { willReadFrequently: true });
+    const src = cv.imread(sourceGuid);
+    const dest = cv.Mat.zeros(src.rows, src.cols, cv.CV_8UC3);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+    cv.threshold(src, src, 0, 255, cv.THRESH_BINARY);
+    let contours = new cv.MatVector();
+    let hierarchy = new cv.Mat();
+    cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
+    console.log("Found Contours: " + contours.size());
+    for (let i = 0; i < contours.size(); ++i) {
+        let color = new cv.Scalar(Math.round(Math.random() * 255), Math.round(Math.random() * 255),
+            Math.round(Math.random() * 255));
+        cv.drawContours(dest, contours, i, color, 1, cv.LINE_8, hierarchy, 100);
+    }
+    contours.delete(); hierarchy.delete();
+    cv.imshow(destGuid, dest);
+    src.delete();
+    dest.delete();
+}
 
 export function EqualizeGrayHist(sourceGuid, destGuid, params) {
     InvokeStep(sourceGuid, destGuid, (src, dest) => {
