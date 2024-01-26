@@ -54,6 +54,11 @@ public static class PipelineStepDefinition
             },
             new PipelineStep()
             {
+                Name = "Find Waldo",
+                JsName="FindWaldo"
+            },
+            new PipelineStep()
+            {
                 Name = "Invert",
                 JsName="Invert"
             },
