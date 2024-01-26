@@ -66,11 +66,15 @@ export function FindContours(sourceGuid, destGuid, params) {
     let hierarchy = new cv.Mat();
     cv.findContours(src, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
     console.log("Found Contours: " + contours.size());
+    let contourAreas = [];
     for (let i = 0; i < contours.size(); ++i) {
         let color = new cv.Scalar(Math.round(Math.random() * 255), Math.round(Math.random() * 255),
             Math.round(Math.random() * 255));
         cv.drawContours(dest, contours, i, color, 1, cv.LINE_8, hierarchy, 100);
+        contourAreas.push(cv.contourArea(contours.get(i)));
     }
+    console.log("Snowmans: " + contourAreas.filter(a => a > 350).length);
+    console.log("Trees: " + contourAreas.filter(a => a < 350).length);
     contours.delete(); hierarchy.delete();
     cv.imshow(destGuid, dest);
     src.delete();
